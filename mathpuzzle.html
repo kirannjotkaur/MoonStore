@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Percentage Converter | Created by Mahi</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI, sans-serif;
+}
+
+body{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:linear-gradient(135deg,#667eea,#764ba2);
+}
+
+.container{
+background:rgba(255,255,255,0.15);
+backdrop-filter:blur(15px);
+padding:40px;
+border-radius:20px;
+text-align:center;
+width:350px;
+color:white;
+box-shadow:0 20px 40px rgba(0,0,0,0.3);
+}
+
+h1{
+margin-bottom:20px;
+font-size:28px;
+}
+
+input{
+width:100%;
+padding:12px;
+margin:10px 0;
+border:none;
+border-radius:10px;
+font-size:16px;
+outline:none;
+}
+
+button{
+width:100%;
+padding:12px;
+border:none;
+border-radius:10px;
+background:#ff7a18;
+background:linear-gradient(45deg,#ff7a18,#ffb347);
+color:white;
+font-size:18px;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+transform:scale(1.05);
+}
+
+.result{
+margin-top:20px;
+font-size:20px;
+font-weight:bold;
+}
+
+footer{
+margin-top:25px;
+font-size:14px;
+opacity:0.8;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Percentage Converter</h1>
+
+<input type="number" id="number" placeholder="Enter Number">
+
+<input type="number" id="percent" placeholder="Enter Percentage">
+
+<button onclick="calculate()">Calculate</button>
+
+<div class="result" id="result"></div>
+
+<footer>Created by Mahi</footer>
+
+</div>
+
+<script>
+
+function calculate(){
+
+let number=document.getElementById("number").value;
+let percent=document.getElementById("percent").value;
+
+let answer=(number*percent)/100;
+
+document.getElementById("result").innerHTML=
+percent+"% of "+number+" = "+answer;
+
+}
+
+</script>
+
+</body>
+</html>
