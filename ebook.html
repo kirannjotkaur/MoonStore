@@ -2,74 +2,129 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Bright Future Ebook</title>
+<title>7 Days Business Ebook</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
 <style>
-body {
-    margin:0;
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:#eaeaea;
-    font-family: 'Poppins', sans-serif;
+
+body{
+margin:0;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:#050505;
+font-family:'Poppins',sans-serif;
+}
+
+/* Background Glow */
+body::before{
+content:'';
+position:absolute;
+width:600px;
+height:600px;
+background:#8a2be2;
+filter:blur(220px);
+top:-150px;
+left:-150px;
+opacity:0.4;
 }
 
 /* Cover */
-.cover {
-    width:360px;
-    height:560px;
-    background:#ffffff;
-    border-radius:12px;
-    box-shadow:0 20px 40px rgba(0,0,0,0.2);
-    padding:25px;
-    position:relative;
-    text-align:center;
+.cover{
+width:400px;
+height:600px;
+padding:35px;
+border-radius:20px;
+background: rgba(255,255,255,0.05);
+backdrop-filter: blur(25px);
+border:1px solid rgba(255,255,255,0.1);
+box-shadow:0 30px 80px rgba(0,0,0,0.7);
+text-align:center;
+position:relative;
+overflow:hidden;
+}
+
+/* Glow Overlay */
+.cover::after{
+content:'';
+position:absolute;
+inset:0;
+background:linear-gradient(120deg,transparent,#8a2be220,transparent);
 }
 
 /* Logo */
-.logo img {
-    width:220px;
-    margin-top:10px;
+.logo img{
+width:180px;
 }
 
-/* Title */
-.title {
-    margin-top:40px;
-    font-size:24px;
-    font-weight:700;
-    color:#0e2f28;
-    line-height:1.4;
+/* Tag */
+.tag{
+margin-top:15px;
+display:inline-block;
+padding:6px 14px;
+background:#8a2be2;
+border-radius:20px;
+font-size:12px;
+font-weight:600;
+}
+
+/* Big Title */
+.title{
+margin-top:30px;
+font-size:34px;
+font-weight:800;
+line-height:1.3;
+}
+
+.title span{
+color:#8a2be2;
+}
+
+/* Divider */
+.line{
+width:80px;
+height:3px;
+background:#8a2be2;
+margin:20px auto;
 }
 
 /* Subtitle */
-.subtitle {
-    margin-top:15px;
-    font-size:14px;
-    color:#555;
-    line-height:1.6;
-    padding:0 10px;
+.subtitle{
+font-size:14px;
+color:#ccc;
+line-height:1.6;
 }
 
-/* Divider line */
-.line {
-    width:60px;
-    height:3px;
-    background:#0e2f28;
-    margin:20px auto;
-    border-radius:2px;
+/* Feature Points */
+.points{
+margin-top:20px;
+font-size:13px;
+color:#aaa;
+line-height:1.8;
+}
+
+.points span{
+color:#8a2be2;
 }
 
 /* Author */
-.author {
-    position:absolute;
-    bottom:25px;
-    width:100%;
-    left:0;
-    font-size:14px;
-    color:#333;
-    font-weight:500;
+.author{
+position:absolute;
+bottom:25px;
+width:100%;
+left:0;
+font-size:14px;
+color:#aaa;
 }
+
+/* Hover preview */
+.cover:hover{
+transform:scale(1.04);
+transition:0.4s;
+}
+
 </style>
 </head>
 
@@ -77,29 +132,36 @@ body {
 
 <div class="cover">
 
-    <!-- Your Logo -->
     <div class="logo">
         <img src="IMG_20260314_001418_083.webp">
     </div>
 
-    <!-- Title -->
+    <div class="tag">BEGINNER TO EARNER</div>
+
     <div class="title">
-        Build Your First Online Income
+        <span>7 Days</span><br>
+        7 Business Ideas
     </div>
 
     <div class="line"></div>
 
-    <!-- Subtitle -->
     <div class="subtitle">
-        A beginner-friendly guide to start earning money online using simple and proven methods.
+        Start your first online income with 7 proven business ideas — each with complete execution steps.
     </div>
 
-    <!-- Author -->
+    <div class="points">
+        ✔ <span>No Investment Needed</span><br>
+        ✔ <span>Step-by-Step Execution</span><br>
+        ✔ <span>Beginner Friendly</span><br>
+        ✔ <span>Real Earning Methods</span>
+    </div>
+
     <div class="author">
-        By Bright Future CEO
+        By Bright Future CEO 🚀
     </div>
 
 </div>
 
 </body>
+
 </html>
