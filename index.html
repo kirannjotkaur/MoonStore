@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Moonstore | Elite Web Experiences</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:#050505;
+color:#fff;
+overflow-x:hidden;
+}
+
+/* 🌌 Animated Gradient Orbs */
+.orb{
+position:absolute;
+border-radius:50%;
+filter:blur(120px);
+opacity:0.4;
+animation:float 10s infinite alternate ease-in-out;
+}
+
+.orb1{
+width:400px;height:400px;
+background:#8a2be2;
+top:-100px;left:-100px;
+}
+
+.orb2{
+width:350px;height:350px;
+background:#00d4ff;
+bottom:-100px;right:-100px;
+animation-delay:2s;
+}
+
+@keyframes float{
+from{transform:translateY(0px);}
+to{transform:translateY(50px);}
+}
+
+/* Container */
+.container{
+max-width:1200px;
+margin:auto;
+padding:20px;
+}
+
+/* Header */
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:20px 0;
+}
+
+.logo{
+font-size:24px;
+font-weight:700;
+letter-spacing:2px;
+}
+
+nav a{
+margin-left:25px;
+color:#aaa;
+text-decoration:none;
+transition:0.3s;
+}
+
+nav a:hover{
+color:#fff;
+}
+
+/* Hero */
+.hero{
+text-align:center;
+margin-top:120px;
+}
+
+.hero h1{
+font-size:60px;
+line-height:1.2;
+font-weight:700;
+}
+
+.hero span{
+background:linear-gradient(90deg,#8a2be2,#00d4ff);
+-webkit-background-clip:text;
+color:transparent;
+}
+
+.hero p{
+margin-top:20px;
+color:#aaa;
+font-size:18px;
+}
+
+.btn{
+display:inline-block;
+margin-top:35px;
+padding:16px 35px;
+border-radius:40px;
+background:linear-gradient(45deg,#8a2be2,#6d1fcc);
+text-decoration:none;
+color:#fff;
+font-size:15px;
+transition:0.3s;
+box-shadow:0 0 25px rgba(138,43,226,0.5);
+}
+
+.btn:hover{
+transform:translateY(-5px) scale(1.05);
+box-shadow:0 0 40px rgba(138,43,226,0.9);
+}
+
+/* Section */
+.section{
+margin-top:140px;
+text-align:center;
+}
+
+.section h2{
+font-size:34px;
+}
+
+.section p{
+color:#aaa;
+margin-top:10px;
+}
+
+/* Cards */
+.cards{
+display:flex;
+flex-wrap:wrap;
+gap:30px;
+justify-content:center;
+margin-top:60px;
+}
+
+.card{
+width:320px;
+padding:35px;
+border-radius:20px;
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(20px);
+border:1px solid rgba(255,255,255,0.1);
+transition:0.4s;
+position:relative;
+overflow:hidden;
+}
+
+.card:hover{
+transform:translateY(-15px) scale(1.05);
+border-color:#8a2be2;
+}
+
+/* Glow Effect */
+.card::after{
+content:'';
+position:absolute;
+width:200%;
+height:200%;
+background:linear-gradient(45deg,transparent,#8a2be2,transparent);
+top:-50%;left:-50%;
+opacity:0;
+transition:0.5s;
+}
+
+.card:hover::after{
+opacity:0.2;
+}
+
+.card h3{
+margin-bottom:10px;
+}
+
+.price{
+font-size:24px;
+color:#8a2be2;
+margin:15px 0;
+font-weight:600;
+}
+
+/* Premium Highlight */
+.premium{
+border:1px solid #8a2be2;
+box-shadow:0 0 50px rgba(138,43,226,0.3);
+}
+
+/* Scroll Animation */
+.hidden{
+opacity:0;
+transform:translateY(40px);
+transition:1s;
+}
+
+.show{
+opacity:1;
+transform:translateY(0);
+}
+
+/* Footer */
+footer{
+margin-top:150px;
+text-align:center;
+color:#777;
+font-size:14px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<div class="container">
+
+<header>
+<div class="logo">MOONSTORE 🌙</div>
+<nav>
+<a href="#">Home</a>
+<a href="#">Work</a>
+<a href="#">Contact</a>
+</nav>
+</header>
+
+<div class="hero hidden">
+<h1>Create <span>Next-Level</span><br>Digital Experiences</h1>
+<p>Not just websites — we build brands that convert & dominate.</p>
+<a href="#" class="btn">🚀 Start Your Project</a>
+</div>
+
+<div class="section hidden">
+<h2>Our Services</h2>
+<p>Premium solutions for serious businesses</p>
+
+<div class="cards">
+
+<div class="card">
+<h3>Starter</h3>
+<p>Minimal clean website for quick launch.</p>
+<div class="price">₹999</div>
+<a href="#" class="btn">Choose</a>
+</div>
+
+<div class="card">
+<h3>Business</h3>
+<p>Professional multi-page high converting site.</p>
+<div class="price">₹2499</div>
+<a href="#" class="btn">Choose</a>
+</div>
+
+<div class="card premium">
+<h3>Elite</h3>
+<p>Luxury UI, animations & full customization.</p>
+<div class="price">₹4999</div>
+<a href="#" class="btn">Go Elite</a>
+</div>
+
+</div>
+</div>
+
+<div class="section hidden">
+<h2>Build in Public</h2>
+<p>Watch real startup growth journey</p>
+<a href="#" class="btn">View Series</a>
+</div>
+
+<footer>
+<p>© 2026 Moonstore — Designed to dominate 🚀</p>
+</footer>
+
+</div>
+
+<script>
+
+/* Scroll Animation */
+const observer = new IntersectionObserver(entries => {
+entries.forEach(entry => {
+if(entry.isIntersecting){
+entry.target.classList.add('show');
+}
+});
+});
+
+document.querySelectorAll('.hidden').forEach(el => observer.observe(el));
+
+</script>
+
+</body>
+</html>
