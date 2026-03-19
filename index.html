@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Moonstore | Premium Website Services</title>
+<title>Moonstore | Elite Web Experiences</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
 
@@ -18,31 +18,43 @@ font-family:'Poppins',sans-serif;
 }
 
 body{
-background: radial-gradient(circle at top, #111 0%, #050505 100%);
+background:#050505;
 color:#fff;
 overflow-x:hidden;
 }
 
-/* Glow Background */
-body::before{
-content:'';
-position:fixed;
-width:500px;
-height:500px;
-background: #8a2be2;
-filter: blur(180px);
-top:-100px;
-left:-100px;
-opacity:0.3;
-z-index:-1;
+/* 🌌 Animated Gradient Orbs */
+.orb{
+position:absolute;
+border-radius:50%;
+filter:blur(120px);
+opacity:0.4;
+animation:float 10s infinite alternate ease-in-out;
+}
+
+.orb1{
+width:400px;height:400px;
+background:#8a2be2;
+top:-100px;left:-100px;
+}
+
+.orb2{
+width:350px;height:350px;
+background:#00d4ff;
+bottom:-100px;right:-100px;
+animation-delay:2s;
+}
+
+@keyframes float{
+from{transform:translateY(0px);}
+to{transform:translateY(50px);}
 }
 
 /* Container */
 .container{
-max-width:1100px;
+max-width:1200px;
 margin:auto;
 padding:20px;
-text-align:center;
 }
 
 /* Header */
@@ -50,18 +62,18 @@ header{
 display:flex;
 justify-content:space-between;
 align-items:center;
-margin-top:20px;
+padding:20px 0;
 }
 
 .logo{
-font-size:26px;
+font-size:24px;
 font-weight:700;
 letter-spacing:2px;
 }
 
 nav a{
-margin-left:20px;
-color:#bbb;
+margin-left:25px;
+color:#aaa;
 text-decoration:none;
 transition:0.3s;
 }
@@ -72,94 +84,100 @@ color:#fff;
 
 /* Hero */
 .hero{
-margin-top:100px;
+text-align:center;
+margin-top:120px;
 }
 
 .hero h1{
-font-size:42px;
-line-height:1.3;
+font-size:60px;
+line-height:1.2;
+font-weight:700;
 }
 
 .hero span{
-background: linear-gradient(45deg,#8a2be2,#00d4ff);
+background:linear-gradient(90deg,#8a2be2,#00d4ff);
 -webkit-background-clip:text;
 color:transparent;
 }
 
 .hero p{
-margin-top:15px;
+margin-top:20px;
 color:#aaa;
-font-size:15px;
+font-size:18px;
 }
 
 .btn{
 display:inline-block;
-margin-top:30px;
-padding:14px 28px;
-background: linear-gradient(45deg,#8a2be2,#6d1fcc);
-color:#fff;
+margin-top:35px;
+padding:16px 35px;
+border-radius:40px;
+background:linear-gradient(45deg,#8a2be2,#6d1fcc);
 text-decoration:none;
-border-radius:30px;
-font-size:14px;
+color:#fff;
+font-size:15px;
 transition:0.3s;
-box-shadow:0 0 20px rgba(138,43,226,0.4);
+box-shadow:0 0 25px rgba(138,43,226,0.5);
 }
 
 .btn:hover{
-transform: translateY(-3px);
-box-shadow:0 0 30px rgba(138,43,226,0.8);
+transform:translateY(-5px) scale(1.05);
+box-shadow:0 0 40px rgba(138,43,226,0.9);
 }
 
 /* Section */
 .section{
-margin-top:120px;
+margin-top:140px;
+text-align:center;
 }
 
 .section h2{
-font-size:28px;
-margin-bottom:10px;
+font-size:34px;
 }
 
 .section p{
 color:#aaa;
+margin-top:10px;
 }
 
 /* Cards */
 .cards{
 display:flex;
 flex-wrap:wrap;
-gap:25px;
+gap:30px;
 justify-content:center;
-margin-top:40px;
+margin-top:60px;
 }
 
 .card{
-background: rgba(255,255,255,0.05);
-backdrop-filter: blur(15px);
-border:1px solid rgba(255,255,255,0.1);
-padding:30px;
+width:320px;
+padding:35px;
 border-radius:20px;
-width:300px;
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(20px);
+border:1px solid rgba(255,255,255,0.1);
 transition:0.4s;
 position:relative;
+overflow:hidden;
 }
 
 .card:hover{
-transform: translateY(-10px) scale(1.03);
+transform:translateY(-15px) scale(1.05);
 border-color:#8a2be2;
 }
 
-.card::before{
+/* Glow Effect */
+.card::after{
 content:'';
 position:absolute;
-inset:0;
-border-radius:20px;
-background: linear-gradient(45deg,transparent,#8a2be2,transparent);
+width:200%;
+height:200%;
+background:linear-gradient(45deg,transparent,#8a2be2,transparent);
+top:-50%;left:-50%;
 opacity:0;
-transition:0.4s;
+transition:0.5s;
 }
 
-.card:hover::before{
+.card:hover::after{
 opacity:0.2;
 }
 
@@ -168,22 +186,34 @@ margin-bottom:10px;
 }
 
 .price{
-margin:15px 0;
-font-size:22px;
+font-size:24px;
 color:#8a2be2;
+margin:15px 0;
 font-weight:600;
 }
 
-/* Highlight Card */
-.card.premium{
+/* Premium Highlight */
+.premium{
 border:1px solid #8a2be2;
-box-shadow:0 0 30px rgba(138,43,226,0.3);
+box-shadow:0 0 50px rgba(138,43,226,0.3);
+}
+
+/* Scroll Animation */
+.hidden{
+opacity:0;
+transform:translateY(40px);
+transition:1s;
+}
+
+.show{
+opacity:1;
+transform:translateY(0);
 }
 
 /* Footer */
 footer{
-margin-top:120px;
-padding:20px;
+margin-top:150px;
+text-align:center;
 color:#777;
 font-size:14px;
 }
@@ -193,74 +223,82 @@ font-size:14px;
 
 <body>
 
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
 <div class="container">
 
 <header>
 <div class="logo">MOONSTORE 🌙</div>
-
 <nav>
 <a href="#">Home</a>
-<a href="#">Services</a>
+<a href="#">Work</a>
 <a href="#">Contact</a>
 </nav>
 </header>
 
-<div class="hero">
-<h1>Build Your <span>Digital Empire</span></h1>
-<p>We craft high-converting, modern websites that grow your business.</p>
-
-<a href="dayone.html" class="btn">🚀 My Startup Journey</a>
+<div class="hero hidden">
+<h1>Create <span>Next-Level</span><br>Digital Experiences</h1>
+<p>Not just websites — we build brands that convert & dominate.</p>
+<a href="#" class="btn">🚀 Start Your Project</a>
 </div>
 
-<div class="section">
-<h2>Premium Services</h2>
-<p>Choose the perfect plan for your business growth</p>
+<div class="section hidden">
+<h2>Our Services</h2>
+<p>Premium solutions for serious businesses</p>
 
 <div class="cards">
 
 <div class="card">
-<h3>Basic Website</h3>
-<p>Perfect for beginners and personal brands.</p>
+<h3>Starter</h3>
+<p>Minimal clean website for quick launch.</p>
 <div class="price">₹999</div>
-<a href="#" class="btn">Get Started</a>
+<a href="#" class="btn">Choose</a>
 </div>
 
 <div class="card">
-<h3>Business Website</h3>
-<p>Modern multi-page site for growing businesses.</p>
+<h3>Business</h3>
+<p>Professional multi-page high converting site.</p>
 <div class="price">₹2499</div>
-<a href="#" class="btn">Get Started</a>
+<a href="#" class="btn">Choose</a>
 </div>
 
 <div class="card premium">
-<h3>Premium Website</h3>
-<p>High-end design, animations & full customization.</p>
+<h3>Elite</h3>
+<p>Luxury UI, animations & full customization.</p>
 <div class="price">₹4999</div>
-<a href="#" class="btn">Get Premium</a>
+<a href="#" class="btn">Go Elite</a>
 </div>
 
 </div>
 </div>
 
-<div class="section">
-<h2>Launch Series</h2>
-<p>Follow my real journey building businesses from zero.</p>
-
-<a href="dayone.html" class="btn">Start Day One</a>
-</div>
-
-<div class="section">
-<h2>Contact Me</h2>
-<p>Let's build something powerful together.</p>
-
-<a href="https://instagram.com/moon.store.in" class="btn">📩 DM on Instagram</a>
+<div class="section hidden">
+<h2>Build in Public</h2>
+<p>Watch real startup growth journey</p>
+<a href="#" class="btn">View Series</a>
 </div>
 
 <footer>
-<p>© 2026 Moonstore — Crafted with ambition 🚀</p>
+<p>© 2026 Moonstore — Designed to dominate 🚀</p>
 </footer>
 
 </div>
+
+<script>
+
+/* Scroll Animation */
+const observer = new IntersectionObserver(entries => {
+entries.forEach(entry => {
+if(entry.isIntersecting){
+entry.target.classList.add('show');
+}
+});
+});
+
+document.querySelectorAll('.hidden').forEach(el => observer.observe(el));
+
+</script>
 
 </body>
 </html>
