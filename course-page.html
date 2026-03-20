@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>7 Days · 7 Business Ideas — Operational Efficiency</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0e0c;
+    --paper: #f5f1ea;
+    --cream: #ede8df;
+    --accent: #c8541a;
+    --accent-light: #f0ddd2;
+    --gold: #c4a44a;
+    --muted: #7a7268;
+    --border: #d8d2c8;
+    --white: #fff;
+
+    --day1: #1a3a4a;
+    --day2: #2d4a1e;
+    --day3: #4a2d1e;
+    --day4: #1e2d4a;
+    --day5: #3a1a4a;
+    --day6: #4a3a1a;
+    --day7: #c8541a;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    background: var(--ink);
+    color: var(--paper);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-texture {
+    position: absolute; inset: 0; pointer-events: none; z-index: 0;
+    background-image:
+      radial-gradient(circle at 15% 85%, rgba(200,84,26,.18) 0%, transparent 55%),
+      radial-gradient(circle at 85% 15%, rgba(196,164,74,.12) 0%, transparent 55%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cpath d='M0 0h60v60H0z' fill='none'/%3E%3Ccircle cx='30' cy='30' r='.5' fill='%23ffffff08'/%3E%3C/svg%3E");
+  }
+
+  .hero-nav {
+    position: relative; z-index: 2;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 2rem 3rem;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+  }
+  .hero-nav .logo {
+    font-family: 'DM Mono', monospace;
+    font-size: .75rem; letter-spacing: .12em;
+    color: var(--gold); text-transform: uppercase;
+  }
+  .hero-nav .badge {
+    font-family: 'DM Mono', monospace; font-size: .7rem;
+    background: var(--accent); color: #fff;
+    padding: .35rem .8rem; border-radius: 2rem; letter-spacing: .06em;
+  }
+
+  .hero-body {
+    position: relative; z-index: 2;
+    display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+    padding: 4rem 3rem;
+    max-width: 900px;
+  }
+
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace; font-size: .72rem;
+    letter-spacing: .18em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: .75rem;
+  }
+  .hero-eyebrow::before {
+    content: ''; display: block; width: 2.5rem; height: 1px;
+    background: var(--gold);
+  }
+
+  .hero-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(3rem, 7vw, 6.5rem);
+    line-height: 1.0; margin-bottom: 1.5rem;
+    letter-spacing: -.02em;
+  }
+  .hero-title em { font-style: italic; color: var(--accent); }
+
+  .hero-sub {
+    font-size: 1.05rem; max-width: 540px;
+    color: rgba(245,241,234,.7); line-height: 1.75;
+    margin-bottom: 2.5rem;
+  }
+
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: .6rem;
+    background: var(--accent); color: #fff;
+    font-size: .88rem; font-weight: 600; letter-spacing: .04em;
+    padding: .9rem 2rem; border-radius: .25rem; text-decoration: none;
+    transition: background .2s, transform .2s;
+  }
+  .hero-cta:hover { background: #a84015; transform: translateY(-2px); }
+
+  .hero-stats {
+    position: relative; z-index: 2;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid rgba(255,255,255,.1);
+  }
+  .hero-stat {
+    padding: 1.75rem 3rem;
+    border-right: 1px solid rgba(255,255,255,.1);
+  }
+  .hero-stat:last-child { border-right: none; }
+  .hero-stat-num {
+    font-family: 'DM Serif Display', serif; font-size: 2.4rem;
+    color: var(--gold);
+  }
+  .hero-stat-label {
+    font-size: .78rem; letter-spacing: .08em; text-transform: uppercase;
+    color: rgba(245,241,234,.5); margin-top: .2rem;
+  }
+
+  /* ── INTRO STRIP ── */
+  .intro-strip {
+    background: var(--accent); color: #fff;
+    padding: 1.2rem 3rem;
+    display: flex; align-items: center; justify-content: center; gap: 2rem;
+    font-size: .85rem; letter-spacing: .06em; text-transform: uppercase;
+    font-weight: 600; font-family: 'DM Mono', monospace;
+    overflow: hidden;
+  }
+  .intro-strip span { opacity: .6; }
+
+  /* ── SECTION LABELS ── */
+  .section-label {
+    display: inline-flex; align-items: center; gap: .6rem;
+    font-family: 'DM Mono', monospace; font-size: .7rem;
+    letter-spacing: .16em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 1.2rem;
+  }
+  .section-label::before {
+    content: ''; width: 1.5rem; height: 1px; background: currentColor;
+  }
+
+  /* ── OVERVIEW ── */
+  .overview {
+    padding: 6rem 3rem;
+    display: grid; grid-template-columns: 1fr 1.4fr;
+    gap: 4rem; max-width: 1200px; margin: 0 auto;
+  }
+  .overview-left h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 3.5vw, 3rem); line-height: 1.2;
+    margin-bottom: 1.5rem;
+  }
+  .overview-left p { color: var(--muted); line-height: 1.8; margin-bottom: 1rem; }
+
+  .overview-right {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .outcome-card {
+    background: var(--cream); border: 1px solid var(--border);
+    border-radius: .5rem; padding: 1.4rem;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .outcome-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 4px 20px rgba(200,84,26,.1);
+  }
+  .outcome-card .icon {
+    font-size: 1.5rem; margin-bottom: .6rem;
+  }
+  .outcome-card h4 {
+    font-size: .88rem; font-weight: 600; margin-bottom: .4rem;
+  }
+  .outcome-card p { font-size: .8rem; color: var(--muted); line-height: 1.6; }
+
+  /* ── COURSE DAYS ── */
+  .days-section {
+    background: var(--cream);
+    padding: 5rem 3rem;
+  }
+  .days-header {
+    max-width: 1200px; margin: 0 auto 3.5rem;
+    display: flex; justify-content: space-between; align-items: flex-end;
+  }
+  .days-header h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 3vw, 2.6rem);
+  }
+  .days-header p {
+    font-size: .88rem; color: var(--muted); max-width: 320px; text-align: right;
+  }
+
+  .days-grid {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; flex-direction: column; gap: 1.5rem;
+  }
+
+  .day-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: .75rem;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    transition: box-shadow .25s, transform .25s;
+    cursor: pointer;
+    text-decoration: none; color: inherit;
+  }
+  .day-card:hover {
+    box-shadow: 0 8px 40px rgba(15,14,12,.1);
+    transform: translateY(-2px);
+  }
+
+  .day-card-left {
+    padding: 2rem 2rem 2rem 2rem;
+    display: flex; flex-direction: column; justify-content: space-between;
+    position: relative; overflow: hidden;
+  }
+  .day-card-left::after {
+    content: ''; position: absolute; right: 0; top: 0; bottom: 0;
+    width: 1px; background: rgba(255,255,255,.15);
+  }
+
+  .day-num-label {
+    font-family: 'DM Mono', monospace; font-size: .65rem;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: rgba(255,255,255,.55);
+  }
+  .day-num {
+    font-family: 'DM Serif Display', serif; font-size: 4rem; line-height: 1;
+    color: rgba(255,255,255,.15); margin-top: auto;
+  }
+  .day-tag {
+    display: inline-block;
+    background: rgba(255,255,255,.15);
+    color: rgba(255,255,255,.9);
+    font-size: .68rem; font-weight: 600; letter-spacing: .06em;
+    padding: .3rem .7rem; border-radius: .25rem; text-transform: uppercase;
+    font-family: 'DM Mono', monospace; width: fit-content;
+    margin-top: .5rem;
+  }
+
+  .day-card-right { padding: 2rem 2.5rem; }
+  .day-card-right .day-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.45rem; margin-bottom: .6rem; line-height: 1.25;
+  }
+  .day-card-right .day-idea-label {
+    font-family: 'DM Mono', monospace; font-size: .65rem;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: .4rem;
+  }
+  .day-card-right .day-desc {
+    font-size: .9rem; color: var(--muted); line-height: 1.7;
+    margin-bottom: 1.5rem; max-width: 580px;
+  }
+
+  .day-sessions {
+    display: flex; flex-wrap: wrap; gap: .5rem;
+  }
+  .session-pill {
+    background: var(--cream); border: 1px solid var(--border);
+    font-size: .73rem; padding: .3rem .75rem; border-radius: 2rem;
+    color: var(--ink); font-weight: 500;
+    display: flex; align-items: center; gap: .35rem;
+  }
+  .session-pill .dot {
+    width: .45rem; height: .45rem; border-radius: 50%;
+    background: var(--accent); flex-shrink: 0;
+  }
+
+  .day-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 1.5rem; padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+  }
+  .day-meta { display: flex; gap: 1.5rem; }
+  .day-meta-item {
+    font-size: .75rem; color: var(--muted); display: flex; align-items: center; gap: .35rem;
+    font-family: 'DM Mono', monospace;
+  }
+  .day-cta {
+    font-size: .78rem; font-weight: 600; color: var(--accent);
+    display: flex; align-items: center; gap: .4rem;
+    letter-spacing: .04em;
+  }
+  .day-cta svg { transition: transform .2s; }
+  .day-card:hover .day-cta svg { transform: translateX(4px); }
+
+  /* color themes per day */
+  .d1 .day-card-left { background: var(--day1); }
+  .d2 .day-card-left { background: var(--day2); }
+  .d3 .day-card-left { background: var(--day3); }
+  .d4 .day-card-left { background: var(--day4); }
+  .d5 .day-card-left { background: var(--day5); }
+  .d6 .day-card-left { background: var(--day6); }
+  .d7 .day-card-left { background: var(--day7); }
+
+  /* ── WHAT YOU GET ── */
+  .deliverables {
+    padding: 6rem 3rem;
+    max-width: 1200px; margin: 0 auto;
+  }
+  .deliverables-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 2rem; margin-top: 3rem;
+  }
+  .deliv-card {
+    padding: 2rem; border: 1px solid var(--border); border-radius: .75rem;
+    background: var(--white);
+    position: relative; overflow: hidden;
+  }
+  .deliv-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 3px; background: var(--accent);
+  }
+  .deliv-card h3 { font-family: 'DM Serif Display', serif; font-size: 1.3rem; margin: 1rem 0 .6rem; }
+  .deliv-card p { font-size: .85rem; color: var(--muted); line-height: 1.7; }
+  .deliv-icon { font-size: 2rem; }
+
+  /* ── FAQ ── */
+  .faq-section {
+    background: var(--ink); color: var(--paper);
+    padding: 6rem 3rem;
+  }
+  .faq-inner { max-width: 800px; margin: 0 auto; }
+  .faq-section h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 3vw, 2.6rem);
+    margin-bottom: 3rem;
+  }
+  .faq-item {
+    border-top: 1px solid rgba(255,255,255,.12);
+    padding: 1.5rem 0;
+  }
+  .faq-item:last-child { border-bottom: 1px solid rgba(255,255,255,.12); }
+  .faq-q {
+    font-weight: 600; font-size: .95rem; margin-bottom: .5rem;
+    display: flex; justify-content: space-between; align-items: flex-start;
+  }
+  .faq-q span { color: var(--accent); font-size: 1.2rem; }
+  .faq-a { font-size: .88rem; color: rgba(245,241,234,.6); line-height: 1.75; }
+
+  /* ── FOOTER ── */
+  .footer {
+    background: var(--ink); color: rgba(245,241,234,.45);
+    padding: 2rem 3rem;
+    border-top: 1px solid rgba(255,255,255,.08);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: .75rem; font-family: 'DM Mono', monospace; letter-spacing: .06em;
+  }
+  .footer a { color: var(--gold); text-decoration: none; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .hero-nav { padding: 1.5rem; }
+    .hero-body { padding: 3rem 1.5rem; }
+    .hero-stats { grid-template-columns: 1fr 1fr 1fr; }
+    .hero-stat { padding: 1.25rem 1.5rem; }
+    .overview { grid-template-columns: 1fr; gap: 2.5rem; padding: 4rem 1.5rem; }
+    .overview-right { grid-template-columns: 1fr 1fr; }
+    .days-section { padding: 4rem 1.5rem; }
+    .days-header { flex-direction: column; align-items: flex-start; gap: .75rem; }
+    .days-header p { text-align: left; max-width: 100%; }
+    .day-card { grid-template-columns: 160px 1fr; }
+    .deliverables { padding: 4rem 1.5rem; }
+    .deliverables-grid { grid-template-columns: 1fr; }
+    .faq-section { padding: 4rem 1.5rem; }
+    .footer { flex-direction: column; gap: .75rem; text-align: center; }
+    .intro-strip { gap: 1rem; flex-wrap: wrap; }
+  }
+  @media (max-width: 640px) {
+    .hero-stats { grid-template-columns: 1fr; }
+    .hero-stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,.1); }
+    .hero-stat:last-child { border-bottom: none; }
+    .day-card { grid-template-columns: 1fr; }
+    .day-card-left { flex-direction: row; padding: 1.25rem 1.5rem; align-items: center; }
+    .day-num { font-size: 2.5rem; }
+    .overview-right { grid-template-columns: 1fr; }
+  }
+
+  /* ── ANIMATIONS ── */
+  .fade-up {
+    opacity: 0; transform: translateY(24px);
+    animation: fadeUp .6s forwards;
+  }
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .delay-1 { animation-delay: .1s; }
+  .delay-2 { animation-delay: .22s; }
+  .delay-3 { animation-delay: .34s; }
+  .delay-4 { animation-delay: .46s; }
+</style>
+</head>
+<body>
+
+<!-- ── HERO ── -->
+<header class="hero">
+  <div class="hero-texture"></div>
+
+  <nav class="hero-nav">
+    <span class="logo">OperationsLab · Course</span>
+    <span class="badge">Free Curriculum</span>
+  </nav>
+
+  <div class="hero-body">
+    <p class="hero-eyebrow fade-up">7-Day Business Challenge</p>
+    <h1 class="hero-title fade-up delay-1">
+      7 Days.<br><em>7 Ideas</em> That<br>Cut Waste &amp; Scale.
+    </h1>
+    <p class="hero-sub fade-up delay-2">
+      One actionable business idea each day — purpose-built to sharpen operations, reduce friction, and unlock growth. No fluff. Just frameworks you can use Monday morning.
+    </p>
+    <a href="#days" class="hero-cta fade-up delay-3">
+      Start the Course
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-num">7</div>
+      <div class="hero-stat-label">Business Ideas</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">35+</div>
+      <div class="hero-stat-label">Actionable Sessions</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">∞</div>
+      <div class="hero-stat-label">Operational Impact</div>
+    </div>
+  </div>
+</header>
+
+<!-- ── STRIP ── -->
+<div class="intro-strip">
+  <span>Automation</span> · <span>Lean Systems</span> · <span>Process Design</span> · <span>Team Productivity</span> · <span>Cost Reduction</span> · <span>Scale Frameworks</span>
+</div>
+
+<!-- ── OVERVIEW ── -->
+<section class="overview">
+  <div class="overview-left">
+    <p class="section-label">What This Is</p>
+    <h2>A Week That Rewires How You Think About Operations</h2>
+    <p>Most businesses bleed time and money through inefficient processes they've never stopped to question. This 7-day course hands you one proven idea per day — grounded in real operational strategy, not theory.</p>
+    <p>Each day is self-contained with a concept, context, sessions, and a hands-on challenge so you leave with something you can test immediately.</p>
+  </div>
+  <div class="overview-right">
+    <div class="outcome-card">
+      <div class="icon">🔍</div>
+      <h4>Spot Hidden Bottlenecks</h4>
+      <p>Identify where your team loses hours every week without realising it.</p>
+    </div>
+    <div class="outcome-card">
+      <div class="icon">⚙️</div>
+      <h4>Build Repeatable Systems</h4>
+      <p>Turn one-off wins into standardised workflows that scale with your team.</p>
+    </div>
+    <div class="outcome-card">
+      <div class="icon">📉</div>
+      <h4>Reduce Overhead Costs</h4>
+      <p>Practical ideas to trim costs without sacrificing quality or output.</p>
+    </div>
+    <div class="outcome-card">
+      <div class="icon">🚀</div>
+      <h4>Accelerate Decision-Making</h4>
+      <p>Frameworks that help your team act faster and smarter under pressure.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── DAYS ── -->
+<section class="days-section" id="days">
+  <div class="days-header">
+    <div>
+      <p class="section-label">The Curriculum</p>
+      <h2>Your 7-Day Roadmap</h2>
+    </div>
+    <p>Each day = one idea + five focused sessions + one field challenge.</p>
+  </div>
+
+  <div class="days-grid">
+
+    <!-- DAY 1 -->
+    <div class="day-card d1">
+      <div class="day-card-left">
+        <div>
+          <p class="day-num-label">Day</p>
+          <div class="day-num">01</div>
+        </div>
+        <span class="day-tag">Foundation</span>
+      </div>
+      <div class="day-card-right">
+        <p class="day-idea-label">Business Idea #1</p>
+        <h3 class="day-title">The Process Audit Business</h3>
+        <p class="day-desc">Launch a consulting micro-business that charges companies to map, benchmark, and rank their internal processes — revealing the exact steps draining productivity. High-margin, low overhead, and immediately sellable.</p>
+        <div class="day-sessions">
+          <span class="session-pill"><span class="dot"></span>Session 1: What a Process Audit Actually Is</span>
+          <span class="session-pill"><span class="dot"></span>Session 2: Identifying Revenue-Killing Bottlenecks</span>
+          <span class="session-pill"><span class="dot"></span>Session 3: Building Your Audit Scorecard</span>
+          <span class="session-pill"><span class="dot"></span>Session 4: Packaging & Pricing the Service</span>
+          <span class="session-pill"><span class="dot"></span>Session 5: Landing Your First Client</span>
+        </div>
+        <div class="day-footer">
+          <div class="day-meta">
+            <span class="day-meta-item">⏱ ~45 min</span>
+            <span class="day-meta-item">📝 Template included</span>
+          </div>
+          <span class="day-cta">Begin Day 1 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 2 -->
+    <div class="day-card d2">
+      <div class="day-card-left">
+        <div>
+          <p class="day-num-label">Day</p>
+          <div class="day-num">02</div>
+        </div>
+        <span class="day-tag">Automation</span>
+      </div>
+      <div class="day-card-right">
+        <p class="day-idea-label">Business Idea #2</p>
+        <h3 class="day-title">The No-Code Automation Agency</h3>
+        <p class="day-desc">Build a service business around Zapier, Make (Integromat), and n8n — connecting the tools SMBs already use to eliminate hours of manual data entry and repetitive tasks. Zero coding required.</p>
+        <div class="day-sessions">
+          <span class="session-pill"><span class="dot"></span>Session 1: The $1B No-Code Market Opportunity</span>
+          <span class="session-pill"><span class="dot"></span>Session 2: The 10 Automations Every SMB Needs</span>
+          <span class="session-pill"><span class="dot"></span>Session 3: Build Your First Automation Live</span>
+          <span class="session-pill"><span class="dot"></span>Session 4: Productising Automations as Packages</span>
+          <span class="session-pill"><span class="dot"></span>Session 5: Retainer Model & Recurring Revenue</span>
+        </div>
+        <div class="day-footer">
+          <div class="day-meta">
+            <span class="day-meta-item">⏱ ~50 min</span>
+            <span class="day-meta-item">🔧 Workflow demo</span>
+          </div>
+          <span class="day-cta">Begin Day 2 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 3 -->
+    <div class="day-card d3">
+      <div class="day-card-left">
+        <div>
+          <p class="day-num-label">Day</p>
+          <div class="day-num">03</div>
+        </div>
+        <span class="day-tag">Systems</span>
+      </div>
+      <div class="day-card-right">
+        <p class="day-idea-label">Business Idea #3</p>
+        <h3 class="day-title">The SOP Factory</h3>
+        <p class="day-desc">Create a productised service that writes, designs, and delivers Standard Operating Procedures for growing businesses. Every scaling company desperately needs SOPs — almost none of them have them.</p>
+        <div class="day-sessions">
+          <span class="session-pill"><span class="dot"></span>Session 1: Why SOPs Are the Backbone of Scale</span>
+          <span class="session-pill"><span class="dot"></span>Session 2: The Perfect SOP Structure</span>
+          <span class="session-pill"><span class="dot"></span>Session 3: Rapid Documentation Techniques</span>
+          <span class="session-pill"><span class="dot"></span>Session 4: SOP Platforms & Delivery Formats</span>
+          <span class="session-pill"><span class="dot"></span>Session 5: Selling SOPs to Franchise Operators</span>
+        </div>
+        <div class="day-footer">
+          <div class="day-meta">
+            <span class="day-meta-item">⏱ ~40 min</span>
+            <span class="day-meta-item">📄 SOP template kit</span>
+          </div>
+          <span class="day-cta">Begin Day 3 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 4 -->
+    <div class="day-card d4">
+      <div class="day-card-left">
+        <div>
+          <p class="day-num-label">Day</p>
+          <div class="day-num">04</div>
+        </div>
+        <span class="day-tag">Analytics</span>
+      </div>
+      <div class="day-card-right">
+        <p class="day-idea-label">Business Idea #4</p>
+        <h3 class="day-title">The Operational Dashboard Studio</h3>
+        <p class="day-desc">Design and build real-time KPI dashboards for operations managers using tools like Looker Studio, Notion, or Airtable. Help businesses stop flying blind and start making data-driven decisions daily.</p>
+        <div class="day-sessions">
+          <span class="session-pill"><span class="dot"></span>Session 1: The Metrics That Actually Matter</span>
+          <span class="session-pill"><span class="dot"></span>Session 2: Picking the Right Dashboard Tool</span>
+          <span class="session-pill"><span class="dot"></span>Session 3: Design Principles for Ops Dashboards</span>
+          <span class="session-pill"><span class="dot"></span>Session 4: Connecting Live Data Sources</span>
+          <span class="session-pill"><span class="dot"></span>Session 5: Onboarding Clients & Training Teams</span>
+        </div>
+        <div class="day-footer">
+          <div class="day-meta">
+            <span class="day-meta-item">⏱ ~55 min</span>
+            <span class="day-meta-item">📊 Dashboard starter</span>
+          </div>
+          <span class="day-cta">Begin Day 4 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 5 -->
+    <div class="day-card d5">
+      <div class="day-card-left">
+        <div>
+          <p class="day-num-label">Day</p>
+          <div class="day-num">05</div>
+        </div>
+        <span class="day-tag">People Ops</span>
+      </div>
+      <div class="day-card-right">
+        <p class="day-idea-label">Business Idea #5</p>
+        <h3 class="day-title">The Virtual Operations Manager</h3>
+        <p class="day-desc">Offer fractional COO services to startups and SMBs that can't afford a full-time ops hire. Run their weekly team syncs, track KPIs, manage vendors, and implement efficiency improvements — remotely.</p>
+        <div class="day-sessions">
+          <span class="session-pill"><span class="dot"></span>Session 1: What a Fractional COO Actually Does</span>
+          <span class="session-pill"><span class="dot"></span>Session 2: Structuring Your Weekly Engagement</span>
+          <span class="session-pill"><span class="dot"></span>Session 3: Running Productive Team Stand-Ups</span>
+          <span class="session-pill"><span class="dot"></span>Session 4: Vendor & Contractor Management</span>
+          <span class="session-pill"><span class="dot"></span>Session 5: Pricing a Fractional Retainer</span>
+        </div>
+        <div class="day-footer">
+          <div class="day-meta">
+            <span class="day-meta-item">⏱ ~45 min</span>
+            <span class="day-meta-item">👤 Role template</span>
+          </div>
+          <span class="day-cta">Begin Day 5 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 6 -->
+    <div class="day-card d6">
+      <div class="day-card-left">
+        <div>
+          <p class="day-num-label">Day</p>
+          <div class="day-num">06</div>
+        </div>
+        <span class="day-tag">Supply Chain</span>
+      </div>
+      <div class="day-card-right">
+        <p class="day-idea-label">Business Idea #6</p>
+        <h3 class="day-title">The Inventory Optimisation Consultancy</h3>
+        <p class="day-desc">Help product-based businesses cut carrying costs and eliminate stock-outs through smarter inventory systems. Use lean principles, reorder point formulas, and supplier negotiation to transform their supply chain.</p>
+        <div class="day-sessions">
+          <span class="session-pill"><span class="dot"></span>Session 1: The True Cost of Poor Inventory</span>
+          <span class="session-pill"><span class="dot"></span>Session 2: ABC Analysis & Pareto Inventory</span>
+          <span class="session-pill"><span class="dot"></span>Session 3: Calculating Reorder Points</span>
+          <span class="session-pill"><span class="dot"></span>Session 4: Supplier Negotiation Frameworks</span>
+          <span class="session-pill"><span class="dot"></span>Session 5: Software Tools & Implementation</span>
+        </div>
+        <div class="day-footer">
+          <div class="day-meta">
+            <span class="day-meta-item">⏱ ~50 min</span>
+            <span class="day-meta-item">📦 Inventory calculator</span>
+          </div>
+          <span class="day-cta">Begin Day 6 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 7 -->
+    <div class="day-card d7">
+      <div class="day-card-left">
+        <div>
+          <p class="day-num-label">Day</p>
+          <div class="day-num">07</div>
+        </div>
+        <span class="day-tag">Scale</span>
+      </div>
+      <div class="day-card-right">
+        <p class="day-idea-label">Business Idea #7</p>
+        <h3 class="day-title">The Efficiency-as-a-Service Platform</h3>
+        <p class="day-desc">Productise everything you've learned this week into a subscription platform — offering businesses an ongoing bundle of audits, automations, dashboards, and coaching. Build recurring revenue from operational excellence.</p>
+        <div class="day-sessions">
+          <span class="session-pill"><span class="dot"></span>Session 1: Bundling Services Into a Platform</span>
+          <span class="session-pill"><span class="dot"></span>Session 2: Subscription Tier Design</span>
+          <span class="session-pill"><span class="dot"></span>Session 3: Onboarding & Client Success Flows</span>
+          <span class="session-pill"><span class="dot"></span>Session 4: Marketing With Case Studies</span>
+          <span class="session-pill"><span class="dot"></span>Session 5: From 0 → 10 Clients in 90 Days</span>
+        </div>
+        <div class="day-footer">
+          <div class="day-meta">
+            <span class="day-meta-item">⏱ ~60 min</span>
+            <span class="day-meta-item">🏆 Capstone project</span>
+          </div>
+          <span class="day-cta">Begin Day 7 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── DELIVERABLES ── -->
+<section class="deliverables">
+  <p class="section-label">What You Walk Away With</p>
+  <h2 style="font-family:'DM Serif Display',serif;font-size:clamp(2rem,3vw,2.5rem);margin-bottom:.5rem;">Tangible Outputs, Every Day</h2>
+  <div class="deliverables-grid">
+    <div class="deliv-card">
+      <div class="deliv-icon">📋</div>
+      <h3>Ready-to-Use Templates</h3>
+      <p>Process audit scorecards, SOP frameworks, KPI tracking sheets — all formatted and ready to deploy with a client or your own team.</p>
+    </div>
+    <div class="deliv-card">
+      <div class="deliv-icon">🧠</div>
+      <h3>Decision Frameworks</h3>
+      <p>Mental models and decision trees that help you — and your clients — diagnose operational problems and choose the right solution fast.</p>
+    </div>
+    <div class="deliv-card">
+      <div class="deliv-icon">💼</div>
+      <h3>Business Blueprints</h3>
+      <p>For each idea: a one-page blueprint covering positioning, pricing, ideal client, first 30-day plan, and tools you need to launch.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ── -->
+<section class="faq-section">
+  <div class="faq-inner">
+    <p class="section-label" style="color:rgba(245,241,234,.4)">Common Questions</p>
+    <h2>Everything You Need to Know</h2>
+
+    <div class="faq-item">
+      <div class="faq-q">Do I need business experience to take this course? <span>+</span></div>
+      <p class="faq-a">No. Each idea is explained from first principles. Whether you're an aspiring entrepreneur or a manager looking to improve your own team's efficiency, the content is designed to be immediately applicable.</p>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How much time do I need each day? <span>+</span></div>
+      <p class="faq-a">Plan for 45–60 minutes per day to complete all five sessions. The field challenge at the end of each day can be done in an additional 20–30 minutes, or spread across the week.</p>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Are these real businesses I can actually start? <span>+</span></div>
+      <p class="faq-a">Yes — every idea in this course has real-world examples. Each one is structured as a viable business model, not just a concept. Day 7 shows you how to combine them all into a single offering.</p>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Can I use these ideas to improve my current employer's operations? <span>+</span></div>
+      <p class="faq-a">Absolutely. The frameworks, templates, and session content are equally useful whether you're starting a new venture or bringing efficiency improvements to your current role.</p>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Is there a community or cohort? <span>+</span></div>
+      <p class="faq-a">The course is self-paced, but we host a monthly live Q&A for anyone progressing through the curriculum. Details are shared on Day 1.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer class="footer">
+  <span>© 2025 OperationsLab · 7 Days 7 Ideas</span>
+  <span>Built for operators, by operators</span>
+  <a href="#">Back to top ↑</a>
+</footer>
+
+</body>
+</html>
