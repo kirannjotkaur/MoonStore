@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Module 1 — Introduction to HTML | HTML Mastery</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --orange:  #e8500a;
+  --amber:   #f5a623;
+  --cream:   #fdf8f2;
+  --ink:     #1a1208;
+  --brown:   #5c3d1e;
+  --sand:    #e8d9c4;
+  --sand2:   #f0e8d8;
+  --muted:   #8a7560;
+  --green:   #2e7d32;
+  --green-bg:#e8f5e9;
+  --blue:    #1565c0;
+  --blue-bg: #e3f2fd;
+  --sidebar-w: 280px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+/* ── LAYOUT ── */
+#layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── SIDEBAR ── */
+#sidebar {
+  width: var(--sidebar-w);
+  background: var(--ink);
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  z-index: 100;
+  transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+}
+#sidebar::-webkit-scrollbar { width: 4px; }
+#sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+.sidebar-brand {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.sidebar-back {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255,255,255,0.45);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  margin-bottom: 14px;
+  transition: color 0.15s;
+}
+.sidebar-back:hover { color: var(--orange); }
+.sidebar-module-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 5px;
+}
+.sidebar-module-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+  line-height: 1.3;
+}
+
+.sidebar-progress-wrap {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.sidebar-progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 8px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.progress-bar-bg {
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(to right, var(--orange), var(--amber));
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.5s ease;
+}
+
+.sidebar-nav { padding: 12px 0; flex: 1; }
+.nav-section-label {
+  padding: 8px 20px 4px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 20px;
+  color: rgba(255,255,255,0.5);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+  position: relative;
+}
+.nav-item:hover { color: white; background: rgba(255,255,255,0.05); }
+.nav-item.active {
+  color: white;
+  background: rgba(232,80,10,0.15);
+}
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--orange);
+  border-radius: 0 2px 2px 0;
+}
+.nav-item.done { color: rgba(255,255,255,0.35); }
+.nav-item.done .nav-check { background: var(--green); border-color: var(--green); }
+.nav-check {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  display: grid;
+  place-items: center;
+  font-size: 9px;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  color: white;
+}
+.nav-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: rgba(255,255,255,0.2);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* ── MAIN CONTENT ── */
+#main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── TOP BAR ── */
+#topbar {
+  position: sticky;
+  top: 0;
+  background: rgba(253,248,242,0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--sand);
+  padding: 0 40px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  z-index: 50;
+}
+.topbar-breadcrumb {
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.topbar-breadcrumb a { color: var(--orange); text-decoration: none; font-weight: 600; }
+.topbar-breadcrumb a:hover { text-decoration: underline; }
+.topbar-spacer { flex: 1; }
+.topbar-badge {
+  background: var(--green-bg);
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.05em;
+}
+
+/* ── LESSON HERO ── */
+.lesson-hero {
+  background: var(--ink);
+  padding: 56px 60px 48px;
+  position: relative;
+  overflow: hidden;
+}
+.lesson-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 100% at 100% 50%, rgba(232,80,10,0.2) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 80% at 0% 0%, rgba(245,166,35,0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+.lesson-hero::after {
+  content: '</html>';
+  position: absolute;
+  right: 60px;
+  bottom: -10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 100px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.03);
+  pointer-events: none;
+  line-height: 1;
+}
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(232,80,10,0.15);
+  border: 1px solid rgba(232,80,10,0.3);
+  color: var(--orange);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  position: relative;
+}
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 900;
+  color: white;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  margin-bottom: 16px;
+  position: relative;
+}
+.hero-title span { color: var(--orange); }
+.hero-desc {
+  font-size: 16px;
+  color: rgba(255,255,255,0.55);
+  max-width: 580px;
+  line-height: 1.7;
+  margin-bottom: 32px;
+  position: relative;
+}
+.hero-stats {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  position: relative;
+}
+.hero-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
+}
+.hero-stat strong { color: rgba(255,255,255,0.8); font-weight: 600; }
+
+/* ── LESSON CONTENT ── */
+.lesson-content {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 48px 60px 80px;
+}
+
+/* Section anchors */
+.lesson-section {
+  margin-bottom: 64px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.lesson-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.section-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 8px;
+}
+.section-heading {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 16px;
+  line-height: 1.3;
+}
+.section-heading .mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 22px;
+  background: linear-gradient(135deg, var(--orange), var(--amber));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.lesson-text {
+  color: var(--brown);
+  font-size: 15px;
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+.lesson-text strong { color: var(--ink); font-weight: 600; }
+.lesson-text code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  background: var(--sand2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--orange);
+}
+
+/* ── CODE BLOCK ── */
+.code-block {
+  background: #1a1208;
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 20px 0;
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+}
+.code-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.code-dots { display: flex; gap: 6px; }
+.code-dot { width: 10px; height: 10px; border-radius: 50%; }
+.code-dot:nth-child(1) { background: #ff5f57; }
+.code-dot:nth-child(2) { background: #febc2e; }
+.code-dot:nth-child(3) { background: #28c840; }
+.code-lang {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.code-copy {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.4);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.code-copy:hover { border-color: var(--orange); color: var(--orange); }
+.code-copy.copied { border-color: var(--green); color: var(--green); }
+.code-body {
+  padding: 20px 20px 20px 0;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #cdd3de;
+  display: flex;
+}
+.line-nums {
+  padding: 0 14px 0 20px;
+  text-align: right;
+  color: rgba(255,255,255,0.15);
+  user-select: none;
+  min-width: 40px;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  margin-right: 18px;
+  line-height: 1.7;
+}
+.code-content { flex: 1; white-space: pre; }
+
+/* Syntax colors */
+.t-tag    { color: #e06c75; }
+.t-attr   { color: #d19a66; }
+.t-val    { color: #98c379; }
+.t-cm     { color: #5c6370; font-style: italic; }
+.t-txt    { color: #abb2bf; }
+.t-key    { color: #c678dd; }
+.t-str    { color: #98c379; }
+
+/* ── CALLOUT ── */
+.callout {
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin: 20px 0;
+  display: flex;
+  gap: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.callout-tip  { background: #f0faf5; border: 1px solid #a7e3c4; color: #1a4731; }
+.callout-note { background: #f0f6ff; border: 1px solid #a7c4e3; color: #1a2f4f; }
+.callout-warn { background: #fff8f0; border: 1px solid #f5d5a7; color: #4f2d0a; }
+.callout-icon { font-size: 17px; flex-shrink: 0; margin-top: 1px; }
+.callout strong { display: block; font-weight: 700; margin-bottom: 2px; }
+
+/* ── CONCEPT CARDS ── */
+.concept-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+.concept-card {
+  background: white;
+  border: 1px solid var(--sand);
+  border-radius: 10px;
+  padding: 16px;
+  transition: all 0.18s;
+}
+.concept-card:hover {
+  border-color: var(--orange);
+  box-shadow: 0 4px 16px rgba(232,80,10,0.1);
+  transform: translateY(-2px);
+}
+.concept-icon { font-size: 22px; margin-bottom: 8px; }
+.concept-title { font-weight: 700; font-size: 14px; color: var(--ink); margin-bottom: 4px; }
+.concept-desc { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+
+/* ── COMPARISON TABLE ── */
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--sand);
+  font-size: 13.5px;
+}
+.compare-table th {
+  background: var(--ink);
+  color: white;
+  padding: 11px 16px;
+  text-align: left;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.compare-table td {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--sand2);
+  vertical-align: top;
+  color: var(--brown);
+}
+.compare-table tr:last-child td { border-bottom: none; }
+.compare-table tr:nth-child(even) td { background: #fdfaf7; }
+.compare-table td:first-child { font-weight: 600; color: var(--ink); font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* ── QUIZ ── */
+.quiz-block {
+  background: white;
+  border: 1px solid var(--sand);
+  border-radius: 14px;
+  padding: 24px;
+  margin: 28px 0;
+}
+.quiz-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.quiz-badge {
+  background: var(--orange);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.quiz-q {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+.quiz-options { display: grid; gap: 8px; }
+.quiz-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border: 1.5px solid var(--sand);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.15s;
+  user-select: none;
+  color: var(--brown);
+}
+.quiz-option:hover { border-color: var(--orange); background: #fff8f4; color: var(--ink); }
+.quiz-option.correct { border-color: var(--green); background: var(--green-bg); color: var(--green); }
+.quiz-option.wrong { border-color: #c62828; background: #ffebee; color: #c62828; }
+.quiz-option.disabled { pointer-events: none; opacity: 0.6; }
+.quiz-option.correct.disabled { opacity: 1; }
+.quiz-opt-indicator {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  flex-shrink: 0;
+  font-weight: 700;
+  opacity: 0.6;
+}
+.quiz-feedback {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  display: none;
+}
+.quiz-feedback.show { display: block; }
+.quiz-feedback.correct-fb { background: var(--green-bg); color: var(--green); }
+.quiz-feedback.wrong-fb { background: #ffebee; color: #c62828; }
+
+/* ── INTERACTIVE TRY-IT ── */
+.tryit-block {
+  border: 2px solid var(--sand);
+  border-radius: 14px;
+  overflow: hidden;
+  margin: 28px 0;
+}
+.tryit-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background: var(--sand2);
+  border-bottom: 1px solid var(--sand);
+}
+.tryit-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--brown);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.tryit-run {
+  background: var(--orange);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s;
+}
+.tryit-run:hover { background: #c43e00; }
+.tryit-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.tryit-editor {
+  border-right: 1px solid var(--sand);
+}
+.tryit-editor textarea {
+  width: 100%;
+  height: 180px;
+  padding: 16px;
+  background: #1a1208;
+  color: #abb2bf;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+  line-height: 1.7;
+  tab-size: 2;
+}
+.tryit-preview {
+  background: white;
+  min-height: 180px;
+}
+.tryit-preview iframe {
+  width: 100%;
+  height: 180px;
+  border: none;
+}
+.tryit-footer {
+  padding: 8px 16px;
+  background: var(--sand2);
+  border-top: 1px solid var(--sand);
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── LESSON NAVIGATION ── */
+.lesson-nav-footer {
+  border-top: 1px solid var(--sand);
+  padding: 28px 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: white;
+}
+.lesson-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.15s;
+  border: 1.5px solid var(--sand);
+  color: var(--brown);
+  background: white;
+}
+.lesson-nav-btn:hover { border-color: var(--orange); color: var(--orange); }
+.lesson-nav-btn.primary {
+  background: var(--orange);
+  color: white;
+  border-color: var(--orange);
+}
+.lesson-nav-btn.primary:hover { background: #c43e00; border-color: #c43e00; }
+
+/* ── MARK COMPLETE ── */
+.complete-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  background: var(--ink);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin: 0 auto 40px;
+  display: block;
+}
+.complete-btn:hover { background: var(--orange); transform: translateY(-1px); }
+.complete-btn.done { background: var(--green); }
+
+/* ── DIVIDER ── */
+.lesson-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--sand), transparent);
+  margin: 40px 0;
+}
+
+/* ── HAMBURGER (mobile) ── */
+#sidebar-toggle {
+  display: none;
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 200;
+  background: var(--ink);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  font-size: 18px;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 800px) {
+  #sidebar { transform: translateX(-100%); }
+  #sidebar.open { transform: translateX(0); }
+  #main { margin-left: 0; }
+  #sidebar-toggle { display: flex; }
+  .lesson-hero { padding: 40px 24px 32px; }
+  .lesson-content { padding: 32px 24px 60px; }
+  .lesson-nav-footer { padding: 20px 24px; }
+  .tryit-body { grid-template-columns: 1fr; }
+  .tryit-editor { border-right: none; border-bottom: 1px solid var(--sand); }
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-tag   { animation: fadeUp 0.5s 0.1s both; }
+.hero-title { animation: fadeUp 0.5s 0.2s both; }
+.hero-desc  { animation: fadeUp 0.5s 0.3s both; }
+.hero-stats { animation: fadeUp 0.5s 0.4s both; }
+</style>
+</head>
+<body>
+
+<button id="sidebar-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+
+<div id="layout">
+
+<!-- ── SIDEBAR ── -->
+<aside id="sidebar">
+  <div class="sidebar-brand">
+    <a href="html-course-curriculum.html" class="sidebar-back">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to Curriculum
+    </a>
+    <div class="sidebar-module-label">Module 01</div>
+    <div class="sidebar-module-title">Introduction to HTML</div>
+  </div>
+
+  <div class="sidebar-progress-wrap">
+    <div class="sidebar-progress-label">
+      <span>Progress</span>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progress-fill"></div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Lessons</div>
+
+    <a href="#lesson-1" class="nav-item active" data-lesson="1">
+      <div class="nav-check" id="check-1"></div>
+      <span>What is HTML?</span>
+      <span class="nav-num">1.1</span>
+    </a>
+    <a href="#lesson-2" class="nav-item" data-lesson="2">
+      <div class="nav-check" id="check-2"></div>
+      <span>How the Web Works</span>
+      <span class="nav-num">1.2</span>
+    </a>
+    <a href="#lesson-3" class="nav-item" data-lesson="3">
+      <div class="nav-check" id="check-3"></div>
+      <span>Document Structure</span>
+      <span class="nav-num">1.3</span>
+    </a>
+    <a href="#lesson-4" class="nav-item" data-lesson="4">
+      <div class="nav-check" id="check-4"></div>
+      <span>Elements &amp; Tags</span>
+      <span class="nav-num">1.4</span>
+    </a>
+    <a href="#lesson-5" class="nav-item" data-lesson="5">
+      <div class="nav-check" id="check-5"></div>
+      <span>Attributes</span>
+      <span class="nav-num">1.5</span>
+    </a>
+
+    <div class="nav-section-label" style="margin-top:8px;">Practice</div>
+
+    <a href="#quiz" class="nav-item" data-lesson="6">
+      <div class="nav-check" id="check-6"></div>
+      <span>Quiz</span>
+      <span class="nav-num">✦</span>
+    </a>
+    <a href="#tryit" class="nav-item" data-lesson="7">
+      <div class="nav-check" id="check-7"></div>
+      <span>Try It Yourself</span>
+      <span class="nav-num">✦</span>
+    </a>
+  </nav>
+</aside>
+
+<!-- ── MAIN ── -->
+<main id="main">
+
+  <!-- TOP BAR -->
+  <div id="topbar">
+    <div class="topbar-breadcrumb">
+      <a href="html-course-curriculum.html">Curriculum</a>
+      <span>›</span>
+      <span>Module 01</span>
+      <span>›</span>
+      <span>Introduction to HTML</span>
+    </div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-badge">🟢 Beginner</div>
+  </div>
+
+  <!-- HERO -->
+  <div class="lesson-hero">
+    <div class="hero-tag">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+      Module 01 · Introduction
+    </div>
+    <h1 class="hero-title">Introduction to<br><span>HTML</span></h1>
+    <p class="hero-desc">Learn what HTML is, how browsers use it to build web pages, the anatomy of a document, and the fundamental building blocks: elements, tags, and attributes.</p>
+    <div class="hero-stats">
+      <div class="hero-stat">🕐 <strong>~2 hours</strong> to complete</div>
+      <div class="hero-stat">📖 <strong>5 lessons</strong></div>
+      <div class="hero-stat">🎯 <strong>1 quiz</strong> · <strong>1 exercise</strong></div>
+    </div>
+  </div>
+
+  <!-- LESSON CONTENT -->
+  <div class="lesson-content">
+
+    <!-- LESSON 1.1 -->
+    <div class="lesson-section" id="lesson-1">
+      <div class="section-eyebrow">Lesson 1.1</div>
+      <h2 class="section-heading">What is <span class="mono">HTML</span>?</h2>
+
+      <p class="lesson-text">
+        <strong>HTML</strong> stands for <strong>HyperText Markup Language</strong>. It is the standard language used to create and structure content on the web. Every webpage you have ever visited — news articles, social media feeds, online stores — is built on top of HTML.
+      </p>
+      <p class="lesson-text">
+        HTML is <em>not</em> a programming language. It has no logic, loops, or conditions. It is a <strong>markup language</strong>, meaning you use it to annotate content and give it meaning. You tell the browser: "this is a heading", "this is a paragraph", "this is a link."
+      </p>
+
+      <div class="concept-grid">
+        <div class="concept-card">
+          <div class="concept-icon">🏗️</div>
+          <div class="concept-title">Structure</div>
+          <div class="concept-desc">HTML defines the skeleton and structure of a web page — headings, paragraphs, sections, and more.</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-icon">🎨</div>
+          <div class="concept-title">Not Styling</div>
+          <div class="concept-desc">Styling (colors, fonts, layout) is handled by CSS. HTML focuses only on content and meaning.</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-icon">⚡</div>
+          <div class="concept-title">Not Behaviour</div>
+          <div class="concept-desc">Interactive behaviour (click events, animations) is handled by JavaScript. HTML is static.</div>
+        </div>
+      </div>
+
+      <div class="callout callout-note">
+        <div class="callout-icon">ℹ️</div>
+        <div><strong>The HTML5 Standard</strong>The current version is HTML5, published in 2014 and continuously updated. It introduced semantic elements, native audio/video support, and many other improvements over older versions.</div>
+      </div>
+
+      <p class="lesson-text">Think of building a website like building a house:</p>
+      <table class="compare-table">
+        <thead><tr><th>Layer</th><th>Technology</th><th>Analogy</th></tr></thead>
+        <tbody>
+          <tr><td>Structure</td><td>HTML</td><td>The walls, floors, and rooms</td></tr>
+          <tr><td>Style</td><td>CSS</td><td>Paint, furniture, decoration</td></tr>
+          <tr><td>Behaviour</td><td>JavaScript</td><td>Electricity, plumbing, smart systems</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="lesson-divider"></div>
+
+    <!-- LESSON 1.2 -->
+    <div class="lesson-section" id="lesson-2">
+      <div class="section-eyebrow">Lesson 1.2</div>
+      <h2 class="section-heading">How the Web Works</h2>
+
+      <p class="lesson-text">
+        When you type a URL into your browser, a lot happens behind the scenes before you see a webpage. Understanding this process helps you understand why HTML is written the way it is.
+      </p>
+
+      <div class="concept-grid">
+        <div class="concept-card">
+          <div class="concept-icon">1️⃣</div>
+          <div class="concept-title">You enter a URL</div>
+          <div class="concept-desc">Your browser parses the address and looks up the server IP using DNS (Domain Name System).</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-icon">2️⃣</div>
+          <div class="concept-title">HTTP Request</div>
+          <div class="concept-desc">The browser sends an HTTP request to the web server asking for the HTML file.</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-icon">3️⃣</div>
+          <div class="concept-title">Server Responds</div>
+          <div class="concept-desc">The server sends back the HTML document along with a status code (e.g. 200 OK).</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-icon">4️⃣</div>
+          <div class="concept-title">Browser Renders</div>
+          <div class="concept-desc">The browser parses the HTML and builds a visual page — the DOM (Document Object Model).</div>
+        </div>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-icon">💡</div>
+        <div><strong>View Page Source</strong>On any website, right-click and select "View Page Source" (or press <code>Ctrl+U</code> / <code>Cmd+U</code>) to see the raw HTML the browser received. This is a great way to learn from real-world websites.</div>
+      </div>
+
+      <p class="lesson-text">The browser's rendering process goes through these steps:</p>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div>
+          <span class="code-lang">Browser Rendering Pipeline</span>
+          <button class="code-copy" onclick="copyCode(this)">Copy</button>
+        </div>
+        <div class="code-body">
+          <div class="line-nums">1
+2
+3
+4
+5</div>
+          <div class="code-content"><span class="t-cm">// 1. Parse HTML → build DOM (Document Object Model)</span>
+<span class="t-cm">// 2. Parse CSS  → build CSSOM (CSS Object Model)</span>
+<span class="t-cm">// 3. Combine    → create Render Tree</span>
+<span class="t-cm">// 4. Layout     → calculate positions & sizes</span>
+<span class="t-cm">// 5. Paint      → draw pixels on screen</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lesson-divider"></div>
+
+    <!-- LESSON 1.3 -->
+    <div class="lesson-section" id="lesson-3">
+      <div class="section-eyebrow">Lesson 1.3</div>
+      <h2 class="section-heading">Document Structure &amp; Boilerplate</h2>
+
+      <p class="lesson-text">
+        Every valid HTML5 page follows a standard structure. This boilerplate is the minimum template you need before writing any content. Let's examine each part.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div>
+          <span class="code-lang">HTML</span>
+          <button class="code-copy" onclick="copyCode(this)">Copy</button>
+        </div>
+        <div class="code-body">
+          <div class="line-nums">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12</div>
+          <div class="code-content"><span class="t-tag">&lt;!DOCTYPE html&gt;</span>
+<span class="t-tag">&lt;html</span> <span class="t-attr">lang</span>=<span class="t-val">"en"</span><span class="t-tag">&gt;</span>
+<span class="t-tag">&lt;head&gt;</span>
+  <span class="t-tag">&lt;meta</span> <span class="t-attr">charset</span>=<span class="t-val">"UTF-8"</span> <span class="t-tag">/&gt;</span>
+  <span class="t-tag">&lt;meta</span> <span class="t-attr">name</span>=<span class="t-val">"viewport"</span> <span class="t-attr">content</span>=<span class="t-val">"width=device-width, initial-scale=1.0"</span> <span class="t-tag">/&gt;</span>
+  <span class="t-tag">&lt;title&gt;</span><span class="t-txt">My First Page</span><span class="t-tag">&lt;/title&gt;</span>
+<span class="t-tag">&lt;/head&gt;</span>
+<span class="t-tag">&lt;body&gt;</span>
+
+  <span class="t-cm">&lt;!-- Your content goes here --&gt;</span>
+
+<span class="t-tag">&lt;/body&gt;</span>
+<span class="t-tag">&lt;/html&gt;</span></div>
+        </div>
+      </div>
+
+      <p class="lesson-text">Here's what each part does:</p>
+
+      <table class="compare-table">
+        <thead><tr><th>Element</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td>&lt;!DOCTYPE html&gt;</td><td>Tells the browser this is an HTML5 document. Always the very first line.</td></tr>
+          <tr><td>&lt;html lang="en"&gt;</td><td>Root element. The <code>lang</code> attribute helps screen readers and search engines.</td></tr>
+          <tr><td>&lt;head&gt;</td><td>Contains metadata — information about the page that isn't displayed visually.</td></tr>
+          <tr><td>&lt;meta charset&gt;</td><td>Sets character encoding to UTF-8 so special characters display correctly.</td></tr>
+          <tr><td>&lt;meta viewport&gt;</td><td>Makes the page responsive on mobile devices.</td></tr>
+          <tr><td>&lt;title&gt;</td><td>The text shown in the browser tab and used by search engines.</td></tr>
+          <tr><td>&lt;body&gt;</td><td>Everything visible to users goes here.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-warn">
+        <div class="callout-icon">⚠️</div>
+        <div><strong>Common Mistake</strong>Forgetting <code>&lt;!DOCTYPE html&gt;</code> causes browsers to enter "quirks mode" — an older rendering mode with inconsistent behaviour. Always include it as the very first line.</div>
+      </div>
+    </div>
+
+    <div class="lesson-divider"></div>
+
+    <!-- LESSON 1.4 -->
+    <div class="lesson-section" id="lesson-4">
+      <div class="section-eyebrow">Lesson 1.4</div>
+      <h2 class="section-heading">Elements &amp; Tags</h2>
+
+      <p class="lesson-text">
+        An <strong>HTML element</strong> is the fundamental unit of HTML. Most elements have an opening tag, some content, and a closing tag.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div>
+          <span class="code-lang">HTML — Anatomy of an Element</span>
+          <button class="code-copy" onclick="copyCode(this)">Copy</button>
+        </div>
+        <div class="code-body">
+          <div class="line-nums">1
+2
+3
+4
+5
+6
+7
+8
+9
+10</div>
+          <div class="code-content"><span class="t-cm">&lt;!-- Full element: opening tag + content + closing tag --&gt;</span>
+<span class="t-tag">&lt;p&gt;</span><span class="t-txt">This is a paragraph of text.</span><span class="t-tag">&lt;/p&gt;</span>
+
+<span class="t-cm">&lt;!-- Heading elements --&gt;</span>
+<span class="t-tag">&lt;h1&gt;</span><span class="t-txt">Main Heading</span><span class="t-tag">&lt;/h1&gt;</span>
+<span class="t-tag">&lt;h2&gt;</span><span class="t-txt">Sub Heading</span><span class="t-tag">&lt;/h2&gt;</span>
+
+<span class="t-cm">&lt;!-- Self-closing element (no content, no closing tag) --&gt;</span>
+<span class="t-tag">&lt;br</span> <span class="t-tag">/&gt;</span>
+<span class="t-tag">&lt;img</span> <span class="t-attr">src</span>=<span class="t-val">"photo.jpg"</span> <span class="t-attr">alt</span>=<span class="t-val">"A photo"</span> <span class="t-tag">/&gt;</span></div>
+        </div>
+      </div>
+
+      <p class="lesson-text">Elements can be nested inside each other. <strong>Nesting must be properly closed</strong> — the last element opened must be the first one closed:</p>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div>
+          <span class="code-lang">HTML — Nesting</span>
+          <button class="code-copy" onclick="copyCode(this)">Copy</button>
+        </div>
+        <div class="code-body">
+          <div class="line-nums">1
+2
+3
+4
+5
+6
+7
+8
+9</div>
+          <div class="code-content"><span class="t-cm">&lt;!-- ✅ CORRECT nesting --&gt;</span>
+<span class="t-tag">&lt;p&gt;</span>
+  This has <span class="t-tag">&lt;strong&gt;</span><span class="t-txt">bold text</span><span class="t-tag">&lt;/strong&gt;</span> inside it.
+<span class="t-tag">&lt;/p&gt;</span>
+
+<span class="t-cm">&lt;!-- ❌ WRONG nesting (overlapping tags) --&gt;</span>
+<span class="t-tag">&lt;p&gt;</span>
+  <span class="t-tag">&lt;strong&gt;</span><span class="t-txt">broken</span><span class="t-tag">&lt;/p&gt;&lt;/strong&gt;</span>  <span class="t-cm">&lt;!-- wrong! --&gt;</span>
+</div>
+        </div>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-icon">💡</div>
+        <div><strong>Block vs Inline Elements</strong><strong>Block elements</strong> (like <code>&lt;p&gt;</code>, <code>&lt;div&gt;</code>, <code>&lt;h1&gt;</code>) start on a new line and take up the full width. <strong>Inline elements</strong> (like <code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;a&gt;</code>) flow within text and only take up as much space as they need.</div>
+      </div>
+    </div>
+
+    <div class="lesson-divider"></div>
+
+    <!-- LESSON 1.5 -->
+    <div class="lesson-section" id="lesson-5">
+      <div class="section-eyebrow">Lesson 1.5</div>
+      <h2 class="section-heading">Attributes</h2>
+
+      <p class="lesson-text">
+        <strong>Attributes</strong> provide extra information about an element. They always go inside the opening tag and follow a <code>name="value"</code> pattern.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div>
+          <span class="code-lang">HTML — Attributes</span>
+          <button class="code-copy" onclick="copyCode(this)">Copy</button>
+        </div>
+        <div class="code-body">
+          <div class="line-nums">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13</div>
+          <div class="code-content"><span class="t-cm">&lt;!-- href attribute on an anchor tag --&gt;</span>
+<span class="t-tag">&lt;a</span> <span class="t-attr">href</span>=<span class="t-val">"https://example.com"</span><span class="t-tag">&gt;</span><span class="t-txt">Visit Example</span><span class="t-tag">&lt;/a&gt;</span>
+
+<span class="t-cm">&lt;!-- src and alt attributes on an image --&gt;</span>
+<span class="t-tag">&lt;img</span> <span class="t-attr">src</span>=<span class="t-val">"logo.png"</span> <span class="t-attr">alt</span>=<span class="t-val">"Company Logo"</span> <span class="t-tag">/&gt;</span>
+
+<span class="t-cm">&lt;!-- Multiple attributes --&gt;</span>
+<span class="t-tag">&lt;input</span> <span class="t-attr">type</span>=<span class="t-val">"text"</span> <span class="t-attr">id</span>=<span class="t-val">"name"</span> <span class="t-attr">placeholder</span>=<span class="t-val">"Enter your name"</span> <span class="t-tag">/&gt;</span>
+
+<span class="t-cm">&lt;!-- Boolean attribute (no value needed) --&gt;</span>
+<span class="t-tag">&lt;input</span> <span class="t-attr">type</span>=<span class="t-val">"checkbox"</span> <span class="t-attr">checked</span> <span class="t-tag">/&gt;</span>
+<span class="t-tag">&lt;button</span> <span class="t-attr">disabled</span><span class="t-tag">&gt;</span><span class="t-txt">Can't click me</span><span class="t-tag">&lt;/button&gt;</span></div>
+        </div>
+      </div>
+
+      <p class="lesson-text">Two <strong>global attributes</strong> appear on almost every HTML element and are worth knowing immediately:</p>
+
+      <table class="compare-table">
+        <thead><tr><th>Attribute</th><th>Purpose</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td>id</td><td>Unique identifier for one element on the page. Used by CSS and JS.</td><td><code>id="main-header"</code></td></tr>
+          <tr><td>class</td><td>Reusable label for styling groups of elements with CSS.</td><td><code>class="card active"</code></td></tr>
+          <tr><td>style</td><td>Inline CSS styles. Useful for quick tests, but avoid in production.</td><td><code>style="color:red"</code></td></tr>
+          <tr><td>data-*</td><td>Custom data attributes for storing extra info. Used by JavaScript.</td><td><code>data-id="42"</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-note">
+        <div class="callout-icon">📌</div>
+        <div><strong>IDs must be unique</strong>Each <code>id</code> value can only appear once per page. If you need to apply the same style to many elements, use <code>class</code> instead.</div>
+      </div>
+    </div>
+
+    <div class="lesson-divider"></div>
+
+    <!-- QUIZ -->
+    <div class="lesson-section" id="quiz">
+      <div class="section-eyebrow">Practice</div>
+      <h2 class="section-heading">Knowledge Check</h2>
+      <p class="lesson-text">Test what you've learned in this module. Each question has one correct answer.</p>
+
+      <!-- Q1 -->
+      <div class="quiz-block">
+        <div class="quiz-header">
+          <span class="quiz-badge">Question 1 of 4</span>
+        </div>
+        <div class="quiz-q">What does HTML stand for?</div>
+        <div class="quiz-options" id="q1">
+          <div class="quiz-option" onclick="answer(this,'q1',false)"><div class="quiz-opt-indicator">A</div>HyperText Markup Language</div>
+          <div class="quiz-option" onclick="answer(this,'q1',true)"><div class="quiz-opt-indicator">B</div>HyperText Markup Language</div>
+          <div class="quiz-option" onclick="answer(this,'q1',false)"><div class="quiz-opt-indicator">C</div>High Transfer Markup Language</div>
+          <div class="quiz-option" onclick="answer(this,'q1',false)"><div class="quiz-opt-indicator">D</div>Hyper Transfer Meta Language</div>
+        </div>
+        <div class="quiz-feedback" id="q1-fb"></div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="quiz-block">
+        <div class="quiz-header">
+          <span class="quiz-badge">Question 2 of 4</span>
+        </div>
+        <div class="quiz-q">Which of the following is a self-closing element?</div>
+        <div class="quiz-options" id="q2">
+          <div class="quiz-option" onclick="answer(this,'q2',false)"><div class="quiz-opt-indicator">A</div><code>&lt;p&gt;</code></div>
+          <div class="quiz-option" onclick="answer(this,'q2',false)"><div class="quiz-opt-indicator">B</div><code>&lt;div&gt;</code></div>
+          <div class="quiz-option" onclick="answer(this,'q2',true)"><div class="quiz-opt-indicator">C</div><code>&lt;img /&gt;</code></div>
+          <div class="quiz-option" onclick="answer(this,'q2',false)"><div class="quiz-opt-indicator">D</div><code>&lt;h1&gt;</code></div>
+        </div>
+        <div class="quiz-feedback" id="q2-fb"></div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="quiz-block">
+        <div class="quiz-header">
+          <span class="quiz-badge">Question 3 of 4</span>
+        </div>
+        <div class="quiz-q">Where should the <code>&lt;!DOCTYPE html&gt;</code> declaration appear?</div>
+        <div class="quiz-options" id="q3">
+          <div class="quiz-option" onclick="answer(this,'q3',false)"><div class="quiz-opt-indicator">A</div>Inside the <code>&lt;head&gt;</code> element</div>
+          <div class="quiz-option" onclick="answer(this,'q3',false)"><div class="quiz-opt-indicator">B</div>Inside the <code>&lt;body&gt;</code> element</div>
+          <div class="quiz-option" onclick="answer(this,'q3',true)"><div class="quiz-opt-indicator">C</div>As the very first line of the document</div>
+          <div class="quiz-option" onclick="answer(this,'q3',false)"><div class="quiz-opt-indicator">D</div>At the end of the document</div>
+        </div>
+        <div class="quiz-feedback" id="q3-fb"></div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="quiz-block">
+        <div class="quiz-header">
+          <span class="quiz-badge">Question 4 of 4</span>
+        </div>
+        <div class="quiz-q">Which attribute is used to give an element a unique name that can be targeted by CSS and JavaScript?</div>
+        <div class="quiz-options" id="q4">
+          <div class="quiz-option" onclick="answer(this,'q4',false)"><div class="quiz-opt-indicator">A</div><code>class</code></div>
+          <div class="quiz-option" onclick="answer(this,'q4',true)"><div class="quiz-opt-indicator">B</div><code>id</code></div>
+          <div class="quiz-option" onclick="answer(this,'q4',false)"><div class="quiz-opt-indicator">C</div><code>name</code></div>
+          <div class="quiz-option" onclick="answer(this,'q4',false)"><div class="quiz-opt-indicator">D</div><code>data-*</code></div>
+        </div>
+        <div class="quiz-feedback" id="q4-fb"></div>
+      </div>
+    </div>
+
+    <div class="lesson-divider"></div>
+
+    <!-- TRY IT -->
+    <div class="lesson-section" id="tryit">
+      <div class="section-eyebrow">Hands-On Exercise</div>
+      <h2 class="section-heading">Try It Yourself</h2>
+      <p class="lesson-text">Edit the HTML in the left panel and click <strong>Run</strong> to see it rendered live on the right. Try adding a new heading or paragraph!</p>
+
+      <div class="tryit-block">
+        <div class="tryit-header">
+          <div class="tryit-label">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            Live Editor
+          </div>
+          <button class="tryit-run" onclick="runTryIt()">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Run
+          </button>
+        </div>
+        <div class="tryit-body">
+          <div class="tryit-editor">
+            <textarea id="tryit-code" spellcheck="false"><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My First Page</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    h1 { color: #e8500a; }
+  </style>
+</head>
+<body>
+
+  <h1>Hello, World!</h1>
+  <p>This is my <strong>first</strong> HTML page.</p>
+  <p>Edit me and click <em>Run</em>!</p>
+
+</body>
+</html></textarea>
+          </div>
+          <div class="tryit-preview">
+            <iframe id="tryit-frame" sandbox="allow-scripts"></iframe>
+          </div>
+        </div>
+        <div class="tryit-footer">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Edit the HTML on the left, then click Run to preview. Ctrl+Enter also runs.
+        </div>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-icon">🎯</div>
+        <div><strong>Challenge</strong>Try adding a second heading with <code>&lt;h2&gt;</code>, a list using <code>&lt;ul&gt;</code> and <code>&lt;li&gt;</code>, and an <code>&lt;a href&gt;</code> link. Don't worry about getting it perfect — experimenting is how you learn!</div>
+      </div>
+    </div>
+
+    <!-- COMPLETE BUTTON -->
+    <button class="complete-btn" id="complete-btn" onclick="markComplete()">
+      ✓ Mark Module as Complete
+    </button>
+
+  </div><!-- end lesson-content -->
+
+  <!-- LESSON NAVIGATION -->
+  <div class="lesson-nav-footer">
+    <a href="html-course-curriculum.html" class="lesson-nav-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to Curriculum
+    </a>
+    <span style="font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;">Module 01 of 08</span>
+    <a href="moduletwo.html" class="lesson-nav-btn primary">
+      Module 2: Text &amp; Content
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </a>
+  </div>
+
+</main>
+</div>
+
+<script>
+// ── SCROLL REVEAL ──
+const sections = document.querySelectorAll('.lesson-section');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      // mark nav item as done when scrolled past
+      const id = e.target.id;
+      const lesson = id.replace('lesson-', '');
+      if (lesson && !isNaN(lesson)) {
+        setTimeout(() => setNavDone(lesson), 800);
+      }
+    }
+  });
+}, { threshold: 0.1 });
+sections.forEach(s => observer.observe(s));
+
+// ── ACTIVE NAV HIGHLIGHT ──
+const navItems = document.querySelectorAll('.nav-item[data-lesson]');
+const lessonEls = document.querySelectorAll('.lesson-section');
+window.addEventListener('scroll', () => {
+  let cur = '';
+  lessonEls.forEach(el => {
+    if (window.scrollY >= el.offsetTop - 120) cur = el.id;
+  });
+  navItems.forEach(item => {
+    item.classList.remove('active');
+    const target = item.getAttribute('href').replace('#', '');
+    if (target === cur) item.classList.add('active');
+  });
+});
+
+// ── PROGRESS ──
+let doneSet = new Set();
+function setNavDone(lessonNum) {
+  doneSet.add(lessonNum);
+  const check = document.getElementById('check-' + lessonNum);
+  const navItem = document.querySelector('.nav-item[data-lesson="' + lessonNum + '"]');
+  if (check) { check.textContent = '✓'; check.style.background = '#2e7d32'; check.style.borderColor = '#2e7d32'; }
+  if (navItem) navItem.classList.add('done');
+  updateProgress();
+}
+function updateProgress() {
+  const pct = Math.round((doneSet.size / 7) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = pct + '%';
+}
+
+// ── QUIZ ──
+const correctAnswers = { q1: 0, q2: 2, q3: 2, q4: 1 };
+function answer(el, qid, isCorrect) {
+  const container = document.getElementById(qid);
+  const options = container.querySelectorAll('.quiz-option');
+  options.forEach(o => o.classList.add('disabled'));
+
+  const fb = document.getElementById(qid + '-fb');
+  if (isCorrect) {
+    el.classList.add('correct');
+    fb.textContent = '✓ Correct! Well done.';
+    fb.className = 'quiz-feedback show correct-fb';
+    setNavDone('6');
+  } else {
+    el.classList.add('wrong');
+    const ci = correctAnswers[qid];
+    options[ci].classList.add('correct');
+    fb.textContent = '✗ Not quite. The highlighted option is correct.';
+    fb.className = 'quiz-feedback show wrong-fb';
+  }
+}
+
+// ── TRY-IT ──
+function runTryIt() {
+  const code = document.getElementById('tryit-code').value;
+  const frame = document.getElementById('tryit-frame');
+  frame.srcdoc = code;
+  setNavDone('7');
+}
+document.getElementById('tryit-code').addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') runTryIt();
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const s = e.target.selectionStart;
+    e.target.value = e.target.value.substring(0,s) + '  ' + e.target.value.substring(e.target.selectionEnd);
+    e.target.selectionStart = e.target.selectionEnd = s + 2;
+  }
+});
+// Auto-run on load
+window.addEventListener('load', () => {
+  runTryIt();
+});
+
+// ── COPY CODE ──
+function copyCode(btn) {
+  const block = btn.closest('.code-block');
+  const text = block.querySelector('.code-content').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ── MARK COMPLETE ──
+function markComplete() {
+  const btn = document.getElementById('complete-btn');
+  btn.classList.add('done');
+  btn.textContent = '✓ Module Complete!';
+  for (let i = 1; i <= 7; i++) setNavDone(String(i));
+  document.getElementById('progress-fill').style.width = '100%';
+  document.getElementById('progress-pct').textContent = '100%';
+}
+</script>
+</body>
+</html>
