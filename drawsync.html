@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d0d1a">
+<title>DrawSync — Live Drawing & Chat</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fira+Code:wght@400;500&display=swap');
+
+:root {
+  --bg: #0d0d1a;
+  --bg2: #131325;
+  --bg3: #1a1a35;
+  --bg4: #22224a;
+  --card: #181830;
+  --border: #2a2a50;
+  --accent: #00e5ff;
+  --accent2: #ff6b9d;
+  --accent3: #a78bfa;
+  --green: #00ffb3;
+  --yellow: #ffd166;
+  --text0: #f0f0ff;
+  --text1: #b0b0d0;
+  --text2: #6060a0;
+  --sans: 'Nunito', sans-serif;
+  --mono: 'Fira Code', monospace;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  height: 100%; width: 100%;
+  background: var(--bg);
+  color: var(--text0);
+  font-family: var(--sans);
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+/* ══ SCREENS ══════════════════════════════════ */
+.screen {
+  position: fixed; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  z-index: 10;
+  padding: 24px;
+  background: var(--bg);
+}
+.screen.hidden {
+  opacity: 0; pointer-events: none;
+  transform: scale(0.96);
+}
+
+/* ══ LOBBY ════════════════════════════════════ */
+#lobby {
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,229,255,0.08) 0%, transparent 70%),
+              radial-gradient(ellipse 60% 40% at 80% 100%, rgba(255,107,157,0.07) 0%, transparent 70%),
+              var(--bg);
+}
+
+.logo-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  margin-bottom: 40px;
+}
+
+.logo-icon {
+  width: 80px; height: 80px;
+  background: linear-gradient(135deg, var(--accent), var(--accent3));
+  border-radius: 24px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40px;
+  margin-bottom: 14px;
+  box-shadow: 0 0 40px rgba(0,229,255,0.3), 0 0 0 1px rgba(0,229,255,0.2);
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.logo-name {
+  font-size: 32px; font-weight: 900;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--accent), var(--accent3), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.logo-tagline {
+  font-size: 13px; color: var(--text2);
+  font-weight: 600; letter-spacing: 0.06em;
+  margin-top: 4px; text-transform: uppercase;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 24px;
+  width: 100%; max-width: 380px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.card-title {
+  font-size: 11px; font-weight: 800;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text2); margin-bottom: 16px;
+}
+
+.input-group {
+  display: flex; flex-direction: column; gap: 10px;
+  margin-bottom: 16px;
+}
+
+.input-field {
+  background: var(--bg3);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--text0);
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 500;
+  padding: 14px 16px;
+  outline: none;
+  width: 100%;
+  text-align: center;
+  letter-spacing: 0.12em;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input-field::placeholder { color: var(--text2); font-size: 14px; letter-spacing: 0.05em; }
+.input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,229,255,0.12); }
+
+.name-field {
+  background: var(--bg3);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--text0);
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px 16px;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.2s;
+  margin-bottom: 12px;
+}
+.name-field::placeholder { color: var(--text2); }
+.name-field:focus { border-color: var(--accent3); box-shadow: 0 0 0 3px rgba(167,139,250,0.12); }
+
+.btn {
+  font-family: var(--sans);
+  font-size: 15px; font-weight: 800;
+  padding: 14px 20px;
+  border-radius: 14px;
+  border: none; cursor: pointer;
+  width: 100%;
+  transition: all 0.18s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #0099bb);
+  color: #000;
+  box-shadow: 0 6px 24px rgba(0,229,255,0.35);
+}
+.btn-primary:hover { box-shadow: 0 8px 32px rgba(0,229,255,0.5); }
+
+.btn-secondary {
+  background: linear-gradient(135deg, var(--accent3), #7c3aed);
+  color: white;
+  box-shadow: 0 6px 24px rgba(167,139,250,0.3);
+}
+
+.btn-pink {
+  background: linear-gradient(135deg, var(--accent2), #c94070);
+  color: white;
+  box-shadow: 0 6px 24px rgba(255,107,157,0.3);
+}
+
+.btn-ghost {
+  background: var(--bg3);
+  border: 1.5px solid var(--border);
+  color: var(--text1);
+}
+.btn-ghost:hover { border-color: var(--accent); color: var(--text0); }
+
+.btn-sm {
+  padding: 8px 14px;
+  font-size: 13px;
+  border-radius: 10px;
+  width: auto;
+}
+
+.or-divider {
+  text-align: center;
+  color: var(--text2);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  margin: 16px 0;
+  position: relative;
+}
+.or-divider::before, .or-divider::after {
+  content: '';
+  position: absolute; top: 50%;
+  width: 38%; height: 1px;
+  background: var(--border);
+}
+.or-divider::before { left: 0; }
+.or-divider::after { right: 0; }
+
+/* ══ ROOM CODE DISPLAY ════════════════════════ */
+.code-display {
+  background: var(--bg3);
+  border: 2px solid var(--accent);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 14px;
+  box-shadow: 0 0 20px rgba(0,229,255,0.15);
+}
+.code-label {
+  font-size: 10px; font-weight: 800; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 6px;
+}
+.code-value {
+  font-family: var(--mono); font-size: 28px; font-weight: 500;
+  color: var(--text0); letter-spacing: 0.2em;
+}
+
+.status-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  display: inline-block; margin-right: 6px;
+}
+.status-dot.connecting { background: var(--yellow); animation: blink 1s infinite; }
+.status-dot.connected { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.status-dot.disconnected { background: var(--accent2); }
+
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+#status-text {
+  font-size: 13px; color: var(--text1);
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px; margin-bottom: 14px;
+}
+
+/* ══ MAIN APP ═════════════════════════════════ */
+#app {
+  position: fixed; inset: 0;
+  display: flex; flex-direction: column;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.35s ease;
+  z-index: 5;
+}
+#app.visible { opacity: 1; pointer-events: all; }
+
+/* ── Top Bar ──────────────────────────────── */
+#topbar {
+  height: 54px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 14px; gap: 10px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 20;
+}
+
+.room-badge {
+  font-family: var(--mono);
+  font-size: 13px; font-weight: 500;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 5px 10px;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+}
+
+#conn-indicator {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 12px; color: var(--text2);
+  font-weight: 600;
+}
+
+.topbar-title {
+  font-size: 16px; font-weight: 900;
+  background: linear-gradient(90deg, var(--accent), var(--accent3));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  flex: 1; text-align: center;
+}
+
+#mode-toggle {
+  display: flex; gap: 4px;
+  background: var(--bg3);
+  border-radius: 10px;
+  padding: 3px;
+  border: 1px solid var(--border);
+}
+.mode-btn {
+  padding: 6px 12px; border-radius: 7px;
+  font-size: 13px; font-weight: 800;
+  border: none; cursor: pointer;
+  background: transparent; color: var(--text2);
+  transition: all 0.15s;
+  font-family: var(--sans);
+}
+.mode-btn.active {
+  background: linear-gradient(135deg, var(--accent), #0099bb);
+  color: #000;
+  box-shadow: 0 2px 8px rgba(0,229,255,0.3);
+}
+
+/* ── Drawing Area ─────────────────────────── */
+#draw-view {
+  flex: 1; display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+#canvas-wrap {
+  flex: 1; position: relative; overflow: hidden;
+  background: #111122;
+  cursor: crosshair;
+}
+
+#draw-canvas {
+  position: absolute; top: 0; left: 0;
+  touch-action: none;
+}
+
+#canvas-overlay {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.canvas-hint {
+  font-size: 13px; color: var(--text2);
+  font-weight: 600; text-align: center;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+/* ── Toolbar ──────────────────────────────── */
+#toolbar {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  padding: 10px 14px calc(10px + var(--safe-bottom));
+  display: flex; flex-direction: column; gap: 10px;
+  flex-shrink: 0;
+}
+
+.tool-row {
+  display: flex; align-items: center; gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tool-btn {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: var(--bg3);
+  color: var(--text1);
+  font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.tool-btn:active { transform: scale(0.9); }
+.tool-btn.active {
+  border-color: var(--accent);
+  background: rgba(0,229,255,0.12);
+  color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(0,229,255,0.15);
+}
+
+.color-dot {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 2.5px solid transparent;
+  cursor: pointer; transition: all 0.15s;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.color-dot.selected {
+  border-color: white;
+  transform: scale(1.2);
+  box-shadow: 0 0 10px rgba(255,255,255,0.4);
+}
+
+.size-slider {
+  -webkit-appearance: none; appearance: none;
+  height: 4px; border-radius: 2px;
+  background: var(--bg4);
+  outline: none; flex: 1;
+  min-width: 80px;
+}
+.size-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(0,229,255,0.5);
+}
+
+.tool-label {
+  font-size: 11px; font-weight: 700;
+  color: var(--text2); letter-spacing: 0.05em;
+  text-transform: uppercase; min-width: 36px;
+}
+
+/* ── Chat Area ────────────────────────────── */
+#chat-view {
+  flex: 1; display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+#messages {
+  flex: 1; overflow-y: auto;
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 10px;
+  scrollbar-width: none;
+}
+#messages::-webkit-scrollbar { display: none; }
+
+.msg-wrap {
+  display: flex; flex-direction: column;
+  max-width: 80%;
+  animation: msgIn 0.2s ease;
+}
+@keyframes msgIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.msg-wrap.me { align-self: flex-end; align-items: flex-end; }
+.msg-wrap.them { align-self: flex-start; align-items: flex-start; }
+
+.msg-name {
+  font-size: 11px; font-weight: 800;
+  margin-bottom: 3px; padding: 0 4px;
+  letter-spacing: 0.04em;
+}
+.msg-wrap.me .msg-name { color: var(--accent); }
+.msg-wrap.them .msg-name { color: var(--accent2); }
+
+.msg-bubble {
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 14px; line-height: 1.5;
+  font-weight: 600;
+  word-break: break-word;
+}
+.msg-wrap.me .msg-bubble {
+  background: linear-gradient(135deg, rgba(0,229,255,0.15), rgba(0,229,255,0.08));
+  border: 1px solid rgba(0,229,255,0.25);
+  border-bottom-right-radius: 4px;
+  color: var(--text0);
+}
+.msg-wrap.them .msg-bubble {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 4px;
+  color: var(--text0);
+}
+
+.msg-time {
+  font-size: 10px; color: var(--text2);
+  margin-top: 3px; padding: 0 4px;
+}
+
+/* System message */
+.sys-msg {
+  text-align: center;
+  font-size: 12px; color: var(--text2);
+  font-weight: 600; padding: 4px 12px;
+  background: var(--bg3);
+  border-radius: 20px;
+  align-self: center;
+  border: 1px solid var(--border);
+  animation: msgIn 0.2s ease;
+}
+
+/* ── Chat Input ───────────────────────────── */
+#chat-input-bar {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  padding: 10px 14px calc(10px + var(--safe-bottom));
+  display: flex; gap: 10px; align-items: flex-end;
+}
+
+#chat-input {
+  flex: 1;
+  background: var(--bg3);
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  color: var(--text0);
+  font-family: var(--sans);
+  font-size: 15px; font-weight: 600;
+  padding: 10px 16px;
+  outline: none;
+  resize: none;
+  max-height: 100px;
+  line-height: 1.4;
+  transition: border-color 0.2s;
+  scrollbar-width: none;
+}
+#chat-input::-webkit-scrollbar { display: none; }
+#chat-input:focus { border-color: var(--accent3); }
+#chat-input::placeholder { color: var(--text2); }
+
+.send-btn {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, var(--accent3), #7c3aed);
+  color: white; font-size: 20px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(167,139,250,0.4);
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.send-btn:active { transform: scale(0.92); }
+
+/* ── Notifications ────────────────────────── */
+#notif {
+  position: fixed; top: 60px; left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-size: 13px; font-weight: 700;
+  color: var(--text0);
+  z-index: 999;
+  opacity: 0; pointer-events: none;
+  transition: all 0.25s;
+  white-space: nowrap;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+#notif.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── Drawing received indicator ───────────── */
+#draw-indicator {
+  position: absolute; top: 10px; right: 10px;
+  background: rgba(0,229,255,0.15);
+  border: 1px solid var(--accent);
+  border-radius: 8px; padding: 5px 10px;
+  font-size: 12px; font-weight: 700; color: var(--accent);
+  opacity: 0; transition: opacity 0.3s;
+  pointer-events: none;
+}
+#draw-indicator.show { opacity: 1; }
+
+/* ── Bottom Chat Notif (in draw mode) ──────── */
+#chat-badge {
+  position: absolute;
+  top: -6px; right: -6px;
+  width: 18px; height: 18px;
+  background: var(--accent2);
+  border-radius: 50%;
+  font-size: 11px; font-weight: 900;
+  color: white;
+  display: none; align-items: center; justify-content: center;
+  border: 2px solid var(--bg2);
+  z-index: 10;
+}
+#chat-badge.show { display: flex; }
+
+.mode-btn-wrap { position: relative; }
+
+/* Eraser cursor */
+.erasing { cursor: cell !important; }
+
+/* Peer preview watermark */
+#peer-label {
+  position: absolute; bottom: 10px; left: 10px;
+  font-size: 11px; font-weight: 700;
+  color: rgba(0,229,255,0.5);
+  pointer-events: none;
+  letter-spacing: 0.05em;
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     LOBBY SCREEN
+══════════════════════════════════════════ -->
+<div class="screen" id="lobby">
+  <div class="logo-wrap">
+    <div class="logo-icon">✏️</div>
+    <div class="logo-name">DrawSync</div>
+    <div class="logo-tagline">Draw Together · Chat Live</div>
+  </div>
+
+  <!-- Name Input -->
+  <div style="width:100%;max-width:380px;margin-bottom:10px">
+    <input class="name-field" id="my-name" placeholder="Your name (e.g. Riya, Aryan...)" maxlength="20">
+  </div>
+
+  <!-- CREATE ROOM -->
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-title">✦ Create a Room</div>
+    <button class="btn btn-primary" onclick="createRoom()">
+      ＋ Create Room & Get Code
+    </button>
+  </div>
+
+  <div class="or-divider" style="width:100%;max-width:380px">OR</div>
+
+  <!-- JOIN ROOM -->
+  <div class="card">
+    <div class="card-title">↗ Join a Room</div>
+    <div class="input-group">
+      <input class="input-field" id="join-code" placeholder="Enter 6-digit code"
+        maxlength="6" inputmode="text" autocomplete="off" oninput="this.value=this.value.toUpperCase()">
+    </div>
+    <button class="btn btn-secondary" onclick="joinRoom()">
+      Join Room →
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     WAITING SCREEN (after Create)
+══════════════════════════════════════════ -->
+<div class="screen hidden" id="waiting">
+  <div style="width:100%;max-width:380px">
+    <div class="logo-wrap" style="margin-bottom:28px">
+      <div class="logo-icon" style="width:60px;height:60px;font-size:28px">✏️</div>
+      <div class="logo-name" style="font-size:24px">DrawSync</div>
+    </div>
+
+    <div class="code-display">
+      <div class="code-label">🔑 Your Room Code</div>
+      <div class="code-value" id="display-code">------</div>
+    </div>
+
+    <div id="status-text">
+      <span class="status-dot connecting" id="status-dot"></span>
+      <span id="status-msg">Waiting for someone to join...</span>
+    </div>
+
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-title">📋 Share this code</div>
+      <p style="font-size:13px;color:var(--text1);line-height:1.6;margin-bottom:12px">
+        Tell your friend to open DrawSync on their phone and enter this code to connect.
+      </p>
+      <button class="btn btn-ghost btn-sm" style="width:100%" onclick="copyCode()">
+        📋 Copy Code
+      </button>
+    </div>
+
+    <button class="btn btn-ghost" onclick="goBack()">← Back</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     CONNECTING SCREEN (after Join)
+══════════════════════════════════════════ -->
+<div class="screen hidden" id="connecting">
+  <div style="text-align:center;width:100%;max-width:380px">
+    <div style="font-size:56px;margin-bottom:20px;animation:float 2s ease-in-out infinite">🔗</div>
+    <div style="font-size:20px;font-weight:900;margin-bottom:10px">Connecting...</div>
+    <div style="font-size:14px;color:var(--text2);margin-bottom:30px">Reaching your friend's device</div>
+    <div id="connect-status" style="font-size:13px;color:var(--text1);margin-bottom:24px"></div>
+    <button class="btn btn-ghost" onclick="goBack()">← Cancel</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MAIN APP
+══════════════════════════════════════════ -->
+<div id="app">
+  <!-- Top Bar -->
+  <div id="topbar">
+    <div class="room-badge" id="room-badge">----</div>
+    <div class="topbar-title">DrawSync</div>
+    <div id="conn-indicator">
+      <span class="status-dot connected" id="app-status-dot"></span>
+      <span id="app-status-text">Live</span>
+    </div>
+    <div id="mode-toggle">
+      <div class="mode-btn-wrap">
+        <button class="mode-btn active" id="btn-draw" onclick="setMode('draw')">✏️</button>
+      </div>
+      <div class="mode-btn-wrap">
+        <button class="mode-btn" id="btn-chat" onclick="setMode('chat')">💬
+          <span id="chat-badge" class="chat-badge"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DRAW VIEW -->
+  <div id="draw-view">
+    <div id="canvas-wrap">
+      <canvas id="draw-canvas"></canvas>
+      <div id="canvas-overlay">
+        <div class="canvas-hint" id="canvas-hint">✏️ Draw here — your friend sees it live!</div>
+      </div>
+      <div id="draw-indicator">✏️ Friend is drawing...</div>
+      <div id="peer-label"></div>
+    </div>
+
+    <!-- Toolbar -->
+    <div id="toolbar">
+      <!-- Color Row -->
+      <div class="tool-row">
+        <span class="tool-label">Color</span>
+        <div id="color-swatches" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"></div>
+        <input type="color" id="custom-color" value="#ffffff"
+          style="width:32px;height:32px;border-radius:8px;border:2px solid var(--border);
+          background:none;cursor:pointer;padding:2px"
+          oninput="setCustomColor(this.value)" title="Custom color">
+      </div>
+
+      <!-- Tools + Size Row -->
+      <div class="tool-row">
+        <span class="tool-label">Tool</span>
+        <button class="tool-btn active" id="tool-pen" onclick="setTool('pen')" title="Pen">✏️</button>
+        <button class="tool-btn" id="tool-line" onclick="setTool('line')" title="Line">╱</button>
+        <button class="tool-btn" id="tool-rect" onclick="setTool('rect')" title="Rectangle">▭</button>
+        <button class="tool-btn" id="tool-circle" onclick="setTool('circle')" title="Circle">○</button>
+        <button class="tool-btn" id="tool-eraser" onclick="setTool('eraser')" title="Eraser">🧹</button>
+        <div style="flex:1;min-width:60px"></div>
+        <button class="tool-btn" onclick="undoLast()" title="Undo">↩</button>
+        <button class="tool-btn" onclick="clearCanvas()" title="Clear">🗑️</button>
+      </div>
+
+      <!-- Size Row -->
+      <div class="tool-row">
+        <span class="tool-label">Size</span>
+        <input type="range" class="size-slider" id="brush-size" min="2" max="40" value="5"
+          oninput="setBrushSize(this.value)">
+        <span id="size-display" style="font-size:12px;color:var(--text2);font-weight:700;min-width:28px;text-align:right">5</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAT VIEW -->
+  <div id="chat-view" style="display:none">
+    <div id="messages"></div>
+    <div id="chat-input-bar">
+      <textarea id="chat-input" rows="1" placeholder="Type a message..."
+        onkeydown="chatKeyDown(event)" oninput="autoResize(this)"></textarea>
+      <button class="send-btn" onclick="sendChat()">➤</button>
+    </div>
+  </div>
+</div>
+
+<!-- Notification -->
+<div id="notif"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  GLOBALS
+// ═══════════════════════════════════════════════════════════
+let peer = null;
+let conn = null;
+let myName = 'Anonymous';
+let peerName = 'Friend';
+let roomCode = '';
+let isHost = false;
+let currentMode = 'draw';
+let unreadChats = 0;
+
+// Drawing state
+let tool = 'pen';
+let brushColor = '#ffffff';
+let brushSize = 5;
+let drawing = false;
+let lastX = 0, lastY = 0;
+let startX = 0, startY = 0;
+let canvasSnapshot = null;
+let strokes = [];
+let currentStroke = null;
+let drawHintHidden = false;
+
+const canvas = document.getElementById('draw-canvas');
+const ctx = canvas.getContext('2d');
+
+// Colors palette
+const COLORS = ['#ffffff','#ff6b9d','#00e5ff','#a78bfa','#ffd166','#00ffb3','#ff4757','#2ed573','#ff6348','#1e90ff','#000000','#888888'];
+
+// ═══════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════
+function init() {
+  setupCanvas();
+  buildColorSwatches();
+  window.addEventListener('resize', resizeCanvas);
+}
+
+function buildColorSwatches() {
+  const wrap = document.getElementById('color-swatches');
+  COLORS.forEach(c => {
+    const dot = document.createElement('div');
+    dot.className = 'color-dot' + (c === brushColor ? ' selected' : '');
+    dot.style.background = c;
+    if (c === '#000000') dot.style.border = '2px solid var(--border)';
+    dot.onclick = () => selectColor(c, dot);
+    wrap.appendChild(dot);
+  });
+}
+
+function selectColor(c, el) {
+  brushColor = c;
+  document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
+  el.classList.add('selected');
+  if (tool === 'eraser') setTool('pen');
+}
+
+function setCustomColor(c) {
+  brushColor = c;
+  document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
+  if (tool === 'eraser') setTool('pen');
+}
+
+function setTool(t) {
+  tool = t;
+  document.querySelectorAll('.tool-btn[id^="tool-"]').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('tool-' + t);
+  if (btn) btn.classList.add('active');
+  document.getElementById('canvas-wrap').classList.toggle('erasing', t === 'eraser');
+}
+
+function setBrushSize(v) {
+  brushSize = parseInt(v);
+  document.getElementById('size-display').textContent = v;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  CANVAS SETUP
+// ═══════════════════════════════════════════════════════════
+function setupCanvas() {
+  resizeCanvas();
+  canvas.addEventListener('mousedown', startDraw);
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', endDraw);
+  canvas.addEventListener('mouseleave', endDraw);
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); startDraw(touchToMouse(e)); }, { passive: false });
+  canvas.addEventListener('touchmove', e => { e.preventDefault(); draw(touchToMouse(e)); }, { passive: false });
+  canvas.addEventListener('touchend', e => { e.preventDefault(); endDraw(); }, { passive: false });
+}
+
+function resizeCanvas() {
+  const wrap = document.getElementById('canvas-wrap');
+  const w = wrap.clientWidth;
+  const h = wrap.clientHeight;
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  canvas.width = w;
+  canvas.height = h;
+  ctx.fillStyle = '#111122';
+  ctx.fillRect(0, 0, w, h);
+  ctx.putImageData(imageData, 0, 0);
+}
+
+function touchToMouse(e) {
+  const rect = canvas.getBoundingClientRect();
+  const touch = e.touches[0] || e.changedTouches[0];
+  return { clientX: touch.clientX, clientY: touch.clientY, buttons: 1 };
+}
+
+function getPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  return {
+    x: (e.clientX - rect.left) * (canvas.width / rect.width),
+    y: (e.clientY - rect.top) * (canvas.height / rect.height)
+  };
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DRAWING LOGIC
+// ═══════════════════════════════════════════════════════════
+function startDraw(e) {
+  drawing = true;
+  const pos = getPos(e);
+  lastX = startX = pos.x;
+  lastY = startY = pos.y;
+  canvasSnapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  if (!drawHintHidden) {
+    drawHintHidden = true;
+    document.getElementById('canvas-hint').style.opacity = '0';
+  }
+  if (tool === 'pen' || tool === 'eraser') {
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, (tool === 'eraser' ? brushSize * 2 : brushSize) / 2, 0, Math.PI * 2);
+    ctx.fillStyle = tool === 'eraser' ? '#111122' : brushColor;
+    ctx.fill();
+  }
+  currentStroke = { tool, color: brushColor, size: brushSize, points: [{x: pos.x, y: pos.y}], w: canvas.width, h: canvas.height };
+  sendDraw({ type: 'start', x: pos.x, y: pos.y, tool, color: brushColor, size: brushSize, cw: canvas.width, ch: canvas.height });
+}
+
+function draw(e) {
+  if (!drawing) return;
+  const pos = getPos(e);
+
+  if (tool === 'pen' || tool === 'eraser') {
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.strokeStyle = tool === 'eraser' ? '#111122' : brushColor;
+    ctx.lineWidth = tool === 'eraser' ? brushSize * 2 : brushSize;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+    if (currentStroke) currentStroke.points.push({x: pos.x, y: pos.y});
+    sendDraw({ type: 'move', x: pos.x, y: pos.y, lx: lastX, ly: lastY, tool, color: brushColor, size: brushSize, cw: canvas.width, ch: canvas.height });
+  } else {
+    // Shape preview
+    ctx.putImageData(canvasSnapshot, 0, 0);
+    drawShape(ctx, tool, startX, startY, pos.x, pos.y, brushColor, brushSize);
+    sendDraw({ type: 'preview', tool, x1: startX, y1: startY, x2: pos.x, y2: pos.y, color: brushColor, size: brushSize, cw: canvas.width, ch: canvas.height });
+  }
+  lastX = pos.x; lastY = pos.y;
+}
+
+function endDraw() {
+  if (!drawing) return;
+  drawing = false;
+  if (tool !== 'pen' && tool !== 'eraser') {
+    drawShape(ctx, tool, startX, startY, lastX, lastY, brushColor, brushSize);
+    sendDraw({ type: 'shape', tool, x1: startX, y1: startY, x2: lastX, y2: lastY, color: brushColor, size: brushSize, cw: canvas.width, ch: canvas.height });
+  }
+  if (currentStroke) { strokes.push(currentStroke); currentStroke = null; }
+  sendDraw({ type: 'end' });
+}
+
+function drawShape(ctx, tool, x1, y1, x2, y2, color, size) {
+  ctx.beginPath();
+  ctx.strokeStyle = color;
+  ctx.fillStyle = 'transparent';
+  ctx.lineWidth = size;
+  ctx.lineCap = 'round';
+  if (tool === 'line') {
+    ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+  } else if (tool === 'rect') {
+    ctx.rect(x1, y1, x2 - x1, y2 - y1);
+  } else if (tool === 'circle') {
+    const rx = Math.abs(x2 - x1) / 2, ry = Math.abs(y2 - y1) / 2;
+    ctx.ellipse(x1 + (x2-x1)/2, y1 + (y2-y1)/2, rx, ry, 0, 0, Math.PI * 2);
+  }
+  ctx.stroke();
+}
+
+function undoLast() {
+  strokes.pop();
+  replayStrokes();
+  sendDraw({ type: 'undo' });
+}
+
+function clearCanvas(notify = true) {
+  strokes = [];
+  ctx.fillStyle = '#111122';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  if (notify) sendDraw({ type: 'clear' });
+}
+
+function replayStrokes() {
+  ctx.fillStyle = '#111122';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  strokes.forEach(s => {
+    if (!s.points || s.points.length === 0) return;
+    if (s.tool === 'pen' || s.tool === 'eraser') {
+      ctx.beginPath();
+      ctx.moveTo(s.points[0].x, s.points[0].y);
+      s.points.forEach(p => ctx.lineTo(p.x, p.y));
+      ctx.strokeStyle = s.tool === 'eraser' ? '#111122' : s.color;
+      ctx.lineWidth = s.tool === 'eraser' ? s.size * 2 : s.size;
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.stroke();
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PEER CONNECTION
+// ═══════════════════════════════════════════════════════════
+function generateCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  return code;
+}
+
+function getName() {
+  return document.getElementById('my-name').value.trim() || 'Anonymous';
+}
+
+function createRoom() {
+  myName = getName();
+  roomCode = generateCode();
+  isHost = true;
+
+  showScreen('waiting');
+  document.getElementById('display-code').textContent = roomCode;
+
+  peer = new Peer('ds-' + roomCode, {
+    host: '0.peerjs.com', port: 443, path: '/',
+    secure: true, debug: 0,
+    config: {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' }
+      ]
+    }
+  });
+
+  peer.on('open', id => {
+    console.log('Host peer open:', id);
+    setStatus('connecting', 'Waiting for someone to join...');
+  });
+
+  peer.on('connection', c => {
+    conn = c;
+    setupConnection();
+  });
+
+  peer.on('error', err => {
+    console.error('Peer error:', err);
+    if (err.type === 'unavailable-id') {
+      // Code taken, generate new one
+      roomCode = generateCode();
+      document.getElementById('display-code').textContent = roomCode;
+      peer.destroy();
+      createRoom();
+    } else {
+      setStatus('disconnected', 'Connection error: ' + err.message);
+    }
+  });
+}
+
+function joinRoom() {
+  myName = getName();
+  const code = document.getElementById('join-code').value.trim().toUpperCase();
+  if (code.length < 4) { showNotif('⚠️ Enter a valid room code'); return; }
+  roomCode = code;
+  isHost = false;
+
+  showScreen('connecting');
+  document.getElementById('connect-status').textContent = 'Looking for room ' + code + '...';
+
+  peer = new Peer(null, {
+    host: '0.peerjs.com', port: 443, path: '/',
+    secure: true, debug: 0,
+    config: {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' }
+      ]
+    }
+  });
+
+  peer.on('open', id => {
+    document.getElementById('connect-status').textContent = 'Connecting to host...';
+    conn = peer.connect('ds-' + code, { reliable: true });
+    setupConnection();
+  });
+
+  peer.on('error', err => {
+    document.getElementById('connect-status').textContent = '❌ ' + (err.type === 'peer-unavailable' ? 'Room not found. Check the code!' : err.message);
+    setTimeout(goBack, 2500);
+  });
+}
+
+function setupConnection() {
+  conn.on('open', () => {
+    // Send hello
+    send({ type: 'hello', name: myName });
+    document.getElementById('connect-status').textContent = '✅ Connected!';
+    setTimeout(launchApp, 600);
+  });
+
+  conn.on('data', handleData);
+
+  conn.on('close', () => {
+    document.getElementById('app-status-dot').className = 'status-dot disconnected';
+    document.getElementById('app-status-text').textContent = 'Offline';
+    addSysMsg('📵 Friend disconnected');
+  });
+
+  conn.on('error', err => {
+    console.error('Conn error:', err);
+  });
+}
+
+function send(data) {
+  if (conn && conn.open) conn.send(JSON.stringify(data));
+}
+
+function sendDraw(data) {
+  data.drawEvent = true;
+  send(data);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DATA HANDLER
+// ═══════════════════════════════════════════════════════════
+let remoteDrawing = false;
+let remoteSnapshot = null;
+let remoteTool = 'pen', remoteColor = '#fff', remoteSize = 5;
+let remoteStartX = 0, remoteStartY = 0;
+let indicatorTimer = null;
+
+function handleData(raw) {
+  let data;
+  try { data = JSON.parse(raw); } catch(e) { return; }
+
+  if (data.type === 'hello') {
+    peerName = data.name || 'Friend';
+    document.getElementById('peer-label').textContent = '👤 ' + peerName;
+    if (!isHost) {
+      addSysMsg('🎉 Connected with ' + peerName + '!');
+    } else {
+      addSysMsg('🎉 ' + peerName + ' joined the room!');
+    }
+    return;
+  }
+
+  if (data.drawEvent) {
+    handleRemoteDraw(data);
+    return;
+  }
+
+  if (data.type === 'chat') {
+    receiveChat(data);
+    return;
+  }
+}
+
+function handleRemoteDraw(d) {
+  showDrawIndicator();
+  const scaleX = canvas.width / (d.cw || canvas.width);
+  const scaleY = canvas.height / (d.ch || canvas.height);
+
+  if (d.type === 'start') {
+    remoteDrawing = true;
+    remoteTool = d.tool; remoteColor = d.color; remoteSize = d.size;
+    remoteStartX = d.x * scaleX; remoteStartY = d.y * scaleY;
+    remoteSnapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    if (remoteTool === 'pen' || remoteTool === 'eraser') {
+      ctx.beginPath();
+      ctx.arc(d.x * scaleX, d.y * scaleY, (remoteTool === 'eraser' ? remoteSize * 2 : remoteSize) / 2, 0, Math.PI * 2);
+      ctx.fillStyle = remoteTool === 'eraser' ? '#111122' : remoteColor;
+      ctx.fill();
+    }
+    if (!drawHintHidden) { drawHintHidden = true; document.getElementById('canvas-hint').style.opacity = '0'; }
+  }
+
+  else if (d.type === 'move') {
+    if (remoteTool === 'pen' || remoteTool === 'eraser') {
+      ctx.beginPath();
+      ctx.moveTo(d.lx * scaleX, d.ly * scaleY);
+      ctx.lineTo(d.x * scaleX, d.y * scaleY);
+      ctx.strokeStyle = remoteTool === 'eraser' ? '#111122' : remoteColor;
+      ctx.lineWidth = remoteTool === 'eraser' ? remoteSize * 2 : remoteSize;
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.stroke();
+    }
+  }
+
+  else if (d.type === 'preview') {
+    if (remoteSnapshot) ctx.putImageData(remoteSnapshot, 0, 0);
+    drawShape(ctx, d.tool, d.x1 * scaleX, d.y1 * scaleY, d.x2 * scaleX, d.y2 * scaleY, d.color, d.size);
+  }
+
+  else if (d.type === 'shape') {
+    drawShape(ctx, d.tool, d.x1 * scaleX, d.y1 * scaleY, d.x2 * scaleX, d.y2 * scaleY, d.color, d.size);
+    remoteDrawing = false;
+  }
+
+  else if (d.type === 'end') { remoteDrawing = false; }
+
+  else if (d.type === 'clear') { clearCanvas(false); showNotif('🗑️ Friend cleared the canvas'); }
+
+  else if (d.type === 'undo') { showNotif('↩ Friend undid a stroke'); }
+}
+
+function showDrawIndicator() {
+  const el = document.getElementById('draw-indicator');
+  el.classList.add('show');
+  clearTimeout(indicatorTimer);
+  indicatorTimer = setTimeout(() => el.classList.remove('show'), 1500);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  CHAT
+// ═══════════════════════════════════════════════════════════
+function sendChat() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  input.style.height = 'auto';
+
+  const msg = { type: 'chat', text, name: myName, time: Date.now() };
+  addChatMsg(msg, true);
+  send(msg);
+}
+
+function receiveChat(data) {
+  addChatMsg(data, false);
+  if (currentMode !== 'chat') {
+    unreadChats++;
+    const badge = document.getElementById('chat-badge');
+    badge.textContent = unreadChats > 9 ? '9+' : unreadChats;
+    badge.classList.add('show');
+    showNotif('💬 ' + data.name + ': ' + data.text.substring(0, 30));
+  }
+}
+
+function addChatMsg(data, isMe) {
+  const msgs = document.getElementById('messages');
+  const wrap = document.createElement('div');
+  wrap.className = 'msg-wrap ' + (isMe ? 'me' : 'them');
+
+  const time = new Date(data.time || Date.now());
+  const timeStr = time.getHours().toString().padStart(2,'0') + ':' + time.getMinutes().toString().padStart(2,'0');
+
+  wrap.innerHTML = `
+    <div class="msg-name">${escHtml(data.name)}</div>
+    <div class="msg-bubble">${escHtml(data.text)}</div>
+    <div class="msg-time">${timeStr}</div>`;
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addSysMsg(text) {
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'sys-msg';
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function chatKeyDown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+            .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  UI NAVIGATION
+// ═══════════════════════════════════════════════════════════
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.toggle('hidden', s.id !== name);
+  });
+}
+
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('draw-view').style.display = mode === 'draw' ? 'flex' : 'none';
+  document.getElementById('chat-view').style.display = mode === 'chat' ? 'flex' : 'none';
+  document.getElementById('btn-draw').classList.toggle('active', mode === 'draw');
+  document.getElementById('btn-chat').classList.toggle('active', mode === 'chat');
+  if (mode === 'chat') {
+    unreadChats = 0;
+    document.getElementById('chat-badge').classList.remove('show');
+    setTimeout(() => {
+      const msgs = document.getElementById('messages');
+      msgs.scrollTop = msgs.scrollHeight;
+      document.getElementById('chat-input').focus();
+    }, 50);
+  }
+  if (mode === 'draw') resizeCanvas();
+}
+
+function launchApp() {
+  showScreen('_none_'); // hide all screens
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+  document.getElementById('app').classList.add('visible');
+  document.getElementById('room-badge').textContent = roomCode;
+  document.getElementById('peer-label').textContent = '👤 ' + peerName;
+  addSysMsg('🎉 Room ' + roomCode + ' — Draw & chat together!');
+  resizeCanvas();
+  ctx.fillStyle = '#111122';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function goBack() {
+  if (peer) { peer.destroy(); peer = null; }
+  conn = null;
+  showScreen('lobby');
+  document.getElementById('app').classList.remove('visible');
+}
+
+function setStatus(state, msg) {
+  const dot = document.getElementById('status-dot');
+  dot.className = 'status-dot ' + state;
+  document.getElementById('status-msg').textContent = msg;
+}
+
+function copyCode() {
+  navigator.clipboard.writeText(roomCode).then(() => {
+    showNotif('✅ Code copied: ' + roomCode);
+  }).catch(() => {
+    showNotif('Room code: ' + roomCode);
+  });
+}
+
+let notifTimer;
+function showNotif(msg) {
+  const n = document.getElementById('notif');
+  n.textContent = msg;
+  n.classList.add('show');
+  clearTimeout(notifTimer);
+  notifTimer = setTimeout(() => n.classList.remove('show'), 2800);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  KEYBOARD (Android soft keyboard handling)
+// ═══════════════════════════════════════════════════════════
+if ('visualViewport' in window) {
+  window.visualViewport.addEventListener('resize', () => {
+    const diff = window.innerHeight - window.visualViewport.height;
+    document.getElementById('app').style.paddingBottom = diff > 100 ? diff + 'px' : '0';
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+//  BOOT
+// ═══════════════════════════════════════════════════════════
+init();
+</script>
+</body>
+</html>
