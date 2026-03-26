@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DevForge — Code Editor</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #0d0f14;
+    --surface:   #13161e;
+    --panel:     #181c26;
+    --border:    #252a38;
+    --accent:    #00e5a0;
+    --accent2:   #7b5ea7;
+    --warn:      #f5a623;
+    --danger:    #e85555;
+    --text:      #c9d1e0;
+    --muted:     #5a6278;
+    --tab-h:     42px;
+    --bar-h:     52px;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    overflow: hidden;
+  }
+
+  /* ── TOP BAR ── */
+  #topbar {
+    height: var(--bar-h);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+    gap: 14px;
+    z-index: 100;
+    position: relative;
+  }
+
+  .logo {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .logo span {
+    color: var(--accent);
+  }
+  .logo-icon {
+    width: 28px; height: 28px;
+    background: var(--accent);
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+    color: #000;
+    font-weight: 800;
+  }
+
+  .spacer { flex: 1; }
+
+  /* status indicators */
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity:1; }
+    50% { opacity:0.4; }
+  }
+  .status-label {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 16px;
+    border-radius: 7px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.18s;
+    white-space: nowrap;
+  }
+  .btn-accent {
+    background: var(--accent);
+    color: #000;
+  }
+  .btn-accent:hover {
+    background: #00ffb3;
+    box-shadow: 0 0 18px rgba(0,229,160,0.35);
+    transform: translateY(-1px);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover {
+    background: var(--border);
+    border-color: var(--muted);
+  }
+  .btn-warn {
+    background: var(--warn);
+    color: #000;
+  }
+  .btn-warn:hover {
+    background: #ffbb44;
+    box-shadow: 0 0 16px rgba(245,166,35,0.3);
+    transform: translateY(-1px);
+  }
+  .btn-purple {
+    background: var(--accent2);
+    color: #fff;
+  }
+  .btn-purple:hover {
+    background: #9b7ec7;
+    box-shadow: 0 0 16px rgba(123,94,167,0.4);
+    transform: translateY(-1px);
+  }
+  .btn svg { flex-shrink:0; }
+
+  /* ── LAYOUT ── */
+  #app {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - var(--bar-h));
+  }
+
+  /* editor + preview split */
+  #workspace {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── EDITOR PANE ── */
+  #editor-pane {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    min-width: 280px;
+    background: var(--panel);
+    border-right: 2px solid var(--border);
+    transition: width 0.3s cubic-bezier(.4,0,.2,1);
+    overflow: hidden;
+  }
+  #editor-pane.full { width: 100%; border-right: none; }
+  #editor-pane.hidden { width: 0; min-width: 0; border-right: none; overflow: hidden; }
+
+  /* tab bar */
+  #tab-bar {
+    display: flex;
+    align-items: center;
+    height: var(--tab-h);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 10px;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .tab {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 0 14px;
+    height: 30px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    border: 1px solid transparent;
+    transition: all 0.15s;
+    user-select: none;
+    flex-shrink: 0;
+  }
+  .tab:hover { color: var(--text); background: var(--border); }
+  .tab.active {
+    color: #fff;
+    background: var(--panel);
+    border-color: var(--border);
+  }
+  .tab-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .tab[data-lang="html"] .tab-dot { background: #e44d26; }
+  .tab[data-lang="css"]  .tab-dot { background: #264de4; }
+  .tab[data-lang="js"]   .tab-dot { background: #f7df1e; }
+  .tab.active[data-lang="html"] { border-top: 2px solid #e44d26; }
+  .tab.active[data-lang="css"]  { border-top: 2px solid #264de4; }
+  .tab.active[data-lang="js"]   { border-top: 2px solid #f7df1e; }
+
+  /* editor wrapper */
+  #editor-wrap {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* line numbers */
+  #line-numbers {
+    padding: 16px 0;
+    width: 52px;
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--muted);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow: hidden;
+    flex-shrink: 0;
+    padding-right: 12px;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .code-area {
+    flex: 1;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    line-height: 1.65;
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: none;
+    color: var(--text);
+    caret-color: var(--accent);
+    white-space: pre;
+    overflow: auto;
+    tab-size: 2;
+    display: none;
+    height: 100%;
+    width: 100%;
+  }
+  .code-area.active { display: block; }
+  .code-area::selection { background: rgba(0,229,160,0.18); }
+  .code-area::-webkit-scrollbar { width: 6px; height: 6px; }
+  .code-area::-webkit-scrollbar-track { background: transparent; }
+  .code-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* editor bottom bar */
+  #editor-footer {
+    height: 28px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 14px;
+    flex-shrink: 0;
+  }
+  .foot-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .foot-item b { color: var(--text); font-weight: 500; }
+
+  /* ── PREVIEW PANE ── */
+  #preview-pane {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    background: var(--bg);
+    transition: all 0.3s cubic-bezier(.4,0,.2,1);
+    overflow: hidden;
+  }
+  #preview-pane.hidden { width: 0; flex: 0; overflow: hidden; }
+
+  #preview-header {
+    height: var(--tab-h);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .preview-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* browser chrome dots */
+  .chrome-dots { display: flex; gap: 6px; margin-right: 4px; }
+  .chrome-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+  .chrome-dot:nth-child(1) { background: var(--danger); }
+  .chrome-dot:nth-child(2) { background: var(--warn); }
+  .chrome-dot:nth-child(3) { background: var(--accent); }
+
+  /* URL bar */
+  .url-bar {
+    flex: 1;
+    height: 26px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 7px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .url-bar span { color: var(--text); font-size: 11px; }
+
+  #preview-frame {
+    flex: 1;
+    border: none;
+    background: #fff;
+    width: 100%;
+    min-height: 0;
+  }
+
+  /* empty preview state */
+  #preview-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    color: var(--muted);
+  }
+  #preview-empty svg { opacity: 0.3; }
+  #preview-empty p { font-size: 13px; }
+
+  /* ── RESIZER ── */
+  #resizer {
+    width: 4px;
+    background: var(--border);
+    cursor: col-resize;
+    flex-shrink: 0;
+    transition: background 0.15s;
+    position: relative;
+    z-index: 10;
+  }
+  #resizer:hover, #resizer.dragging { background: var(--accent); }
+
+  /* ── BOTTOM TOOLBAR ── */
+  #bottom-bar {
+    height: 44px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  /* layout toggle buttons */
+  .layout-group {
+    display: flex;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    overflow: hidden;
+  }
+  .layout-btn {
+    padding: 5px 11px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .layout-btn:hover { color: var(--text); background: var(--border); }
+  .layout-btn.active { color: var(--accent); background: rgba(0,229,160,0.1); }
+  .layout-btn + .layout-btn { border-left: 1px solid var(--border); }
+
+  /* font size */
+  .fs-control {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .fs-btn {
+    width: 22px; height: 22px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+    transition: all 0.1s;
+  }
+  .fs-btn:hover { background: var(--border); }
+
+  /* ── DOWNLOAD MODAL ── */
+  #modal-bg {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(6px);
+    z-index: 200;
+    display: none;
+    place-items: center;
+  }
+  #modal-bg.open { display: grid; }
+  #modal {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    width: 480px;
+    max-width: 94vw;
+    padding: 30px;
+    animation: modalIn 0.25s cubic-bezier(.4,0,.2,1);
+  }
+  @keyframes modalIn {
+    from { opacity:0; transform: translateY(16px) scale(0.97); }
+    to   { opacity:1; transform: translateY(0) scale(1); }
+  }
+  .modal-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  .modal-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 22px;
+    line-height: 1.5;
+  }
+  .modal-option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: all 0.15s;
+    background: var(--surface);
+  }
+  .modal-option:hover { border-color: var(--accent); background: rgba(0,229,160,0.06); }
+  .modal-option-icon {
+    width: 40px; height: 40px;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .modal-option-text { flex: 1; }
+  .modal-option-text strong { display: block; font-size: 14px; color: #fff; margin-bottom: 3px; }
+  .modal-option-text span { font-size: 12px; color: var(--muted); }
+  .modal-close {
+    margin-top: 16px;
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.15s;
+  }
+  .modal-close:hover { background: var(--border); color: var(--text); }
+
+  /* toast */
+  #toast {
+    position: fixed;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--accent);
+    color: #000;
+    padding: 9px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+    z-index: 300;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* scrollbar for whole page */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="logo">
+    <div class="logo-icon">&lt;/&gt;</div>
+    Dev<span>Forge</span>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:6px;">
+    <div class="status-dot"></div>
+    <span class="status-label">ready</span>
+  </div>
+
+  <div class="spacer"></div>
+
+  <button class="btn btn-ghost" id="btn-clear" title="Clear all code">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+    Clear
+  </button>
+
+  <button class="btn btn-ghost" id="btn-download-modal" title="Download code">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Download
+  </button>
+
+  <button class="btn btn-accent" id="btn-run" title="Run preview (Ctrl+Enter)">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    Run Preview
+  </button>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div id="workspace">
+
+    <!-- EDITOR PANE -->
+    <div id="editor-pane">
+
+      <!-- TAB BAR -->
+      <div id="tab-bar">
+        <div class="tab active" data-lang="html">
+          <div class="tab-dot"></div>index.html
+        </div>
+        <div class="tab" data-lang="css">
+          <div class="tab-dot"></div>style.css
+        </div>
+        <div class="tab" data-lang="js">
+          <div class="tab-dot"></div>script.js
+        </div>
+        <div class="spacer"></div>
+        <div class="foot-item" id="word-count"><b>0</b> chars</div>
+      </div>
+
+      <!-- EDITOR WRAP -->
+      <div id="editor-wrap">
+        <div id="line-numbers">1</div>
+        <textarea class="code-area active" id="editor-html" spellcheck="false" placeholder="<!-- Write your HTML here -->"></textarea>
+        <textarea class="code-area" id="editor-css" spellcheck="false" placeholder="/* Write your CSS here */"></textarea>
+        <textarea class="code-area" id="editor-js" spellcheck="false" placeholder="// Write your JavaScript here"></textarea>
+      </div>
+
+      <!-- EDITOR FOOTER -->
+      <div id="editor-footer">
+        <div class="foot-item">Ln <b id="cur-line">1</b></div>
+        <div class="foot-item">Col <b id="cur-col">1</b></div>
+        <div class="foot-item" id="lang-label">HTML</div>
+        <div class="spacer"></div>
+        <div class="foot-item">Tab: <b>2</b></div>
+        <div class="foot-item">UTF-8</div>
+      </div>
+    </div>
+
+    <!-- RESIZER -->
+    <div id="resizer"></div>
+
+    <!-- PREVIEW PANE -->
+    <div id="preview-pane">
+      <div id="preview-header">
+        <div class="chrome-dots">
+          <div class="chrome-dot"></div>
+          <div class="chrome-dot"></div>
+          <div class="chrome-dot"></div>
+        </div>
+        <div class="url-bar">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span>preview://localhost</span>
+        </div>
+        <span class="preview-label">Live Preview</span>
+        <button class="btn btn-ghost" id="btn-refresh" style="padding:4px 10px;font-size:11px;" title="Refresh preview">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          Refresh
+        </button>
+      </div>
+
+      <div id="preview-empty">
+        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+          <polygon points="5 3 19 12 5 21 5 3"/>
+        </svg>
+        <p>Click <strong style="color:var(--accent)">Run Preview</strong> to see your output</p>
+      </div>
+      <iframe id="preview-frame" sandbox="allow-scripts allow-modals" style="display:none;"></iframe>
+    </div>
+  </div>
+
+  <!-- BOTTOM BAR -->
+  <div id="bottom-bar">
+    <span style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;">Layout:</span>
+    <div class="layout-group">
+      <button class="layout-btn" id="layout-editor" title="Editor only">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
+        Editor
+      </button>
+      <button class="layout-btn active" id="layout-split" title="Split view">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+        Split
+      </button>
+      <button class="layout-btn" id="layout-preview" title="Preview only">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><polyline points="8 21 12 17 16 21"/></svg>
+        Preview
+      </button>
+    </div>
+
+    <div style="width:1px;height:20px;background:var(--border);margin:0 4px;"></div>
+
+    <div class="fs-control">
+      <button class="fs-btn" id="fs-minus">−</button>
+      <span id="fs-label">13px</span>
+      <button class="fs-btn" id="fs-plus">+</button>
+    </div>
+
+    <div class="spacer"></div>
+
+    <button class="btn btn-warn" id="btn-fullscreen-preview" title="Open preview in full tab">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+      Open in Tab
+    </button>
+
+    <button class="btn btn-purple" id="btn-copy-all" title="Copy all code">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copy All
+    </button>
+  </div>
+</div>
+
+<!-- DOWNLOAD MODAL -->
+<div id="modal-bg">
+  <div id="modal">
+    <div class="modal-title">Download Code</div>
+    <div class="modal-sub">Choose what to download. The combined file includes all three languages merged into a single index.html.</div>
+
+    <div class="modal-option" id="dl-combined">
+      <div class="modal-option-icon" style="background:rgba(0,229,160,0.15);">📄</div>
+      <div class="modal-option-text">
+        <strong>Combined HTML file</strong>
+        <span>All HTML + CSS + JS merged into one index.html</span>
+      </div>
+    </div>
+
+    <div class="modal-option" id="dl-html">
+      <div class="modal-option-icon" style="background:rgba(228,77,38,0.15);">🟠</div>
+      <div class="modal-option-text">
+        <strong>index.html only</strong>
+        <span>Just the HTML tab content</span>
+      </div>
+    </div>
+
+    <div class="modal-option" id="dl-css">
+      <div class="modal-option-icon" style="background:rgba(38,77,228,0.15);">🔵</div>
+      <div class="modal-option-text">
+        <strong>style.css only</strong>
+        <span>Just the CSS tab content</span>
+      </div>
+    </div>
+
+    <div class="modal-option" id="dl-js">
+      <div class="modal-option-icon" style="background:rgba(247,223,30,0.15);">🟡</div>
+      <div class="modal-option-text">
+        <strong>script.js only</strong>
+        <span>Just the JavaScript tab content</span>
+      </div>
+    </div>
+
+    <div class="modal-option" id="dl-zip">
+      <div class="modal-option-icon" style="background:rgba(123,94,167,0.15);">🗜️</div>
+      <div class="modal-option-text">
+        <strong>All 3 separate files</strong>
+        <span>Download HTML, CSS, JS as individual files</span>
+      </div>
+    </div>
+
+    <button class="modal-close" id="modal-close">Cancel</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ── STATE ──
+let currentLang = 'html';
+let fontSize = 13;
+let layout = 'split';
+let previewed = false;
+
+// Default starter code
+const defaults = {
+  html: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Project</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="container">
+    <h1>Hello, DevForge! 👋</h1>
+    <p>Start editing the HTML, CSS, and JS tabs to build something amazing.</p>
+    <button onclick="greet()">Click Me</button>
+  </div>
+
+  <script src="script.js"><\/script>
+</body>
+</html>`,
+  css: `* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.container {
+  text-align: center;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+  background: linear-gradient(to right, #00e5a0, #7b5ea7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+p {
+  opacity: 0.7;
+  margin-bottom: 24px;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+button {
+  padding: 12px 32px;
+  background: #00e5a0;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+button:hover {
+  background: #00ffb3;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 229, 160, 0.4);
+}`,
+  js: `function greet() {
+  const btn = document.querySelector('button');
+  const messages = [
+    "You clicked! 🎉",
+    "Keep going! 🚀",
+    "Building something cool? 😎",
+    "You're awesome! ⚡",
+    "DevForge loves you! 💚"
+  ];
+  const random = messages[Math.floor(Math.random() * messages.length)];
+  btn.textContent = random;
+  setTimeout(() => btn.textContent = 'Click Me', 1500);
+}`
+};
+
+const editors = {
+  html: document.getElementById('editor-html'),
+  css:  document.getElementById('editor-css'),
+  js:   document.getElementById('editor-js'),
+};
+
+// Load defaults
+editors.html.value = defaults.html;
+editors.css.value  = defaults.css;
+editors.js.value   = defaults.js;
+
+// ── ELEMENTS ──
+const tabs       = document.querySelectorAll('.tab');
+const lineNums   = document.getElementById('line-numbers');
+const curLine    = document.getElementById('cur-line');
+const curCol     = document.getElementById('cur-col');
+const langLabel  = document.getElementById('lang-label');
+const wordCount  = document.getElementById('word-count');
+const fsLabel    = document.getElementById('fs-label');
+const previewEmpty = document.getElementById('preview-empty');
+const previewFrame = document.getElementById('preview-frame');
+const editorPane = document.getElementById('editor-pane');
+const previewPane= document.getElementById('preview-pane');
+const resizer    = document.getElementById('resizer');
+const modalBg    = document.getElementById('modal-bg');
+const toast      = document.getElementById('toast');
+const workspace  = document.getElementById('workspace');
+
+// ── TABS ──
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    const lang = tab.dataset.lang;
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    Object.values(editors).forEach(e => e.classList.remove('active'));
+    editors[lang].classList.add('active');
+    currentLang = lang;
+    langLabel.textContent = lang.toUpperCase();
+    updateLineNumbers();
+    updateCursor();
+    updateWordCount();
+  });
+});
+
+// ── LINE NUMBERS ──
+function updateLineNumbers() {
+  const el = editors[currentLang];
+  const lines = el.value.split('\n').length;
+  lineNums.innerHTML = Array.from({length: lines}, (_, i) => i + 1).join('<br>');
+  lineNums.scrollTop = el.scrollTop;
+}
+
+Object.values(editors).forEach(el => {
+  el.addEventListener('input', () => {
+    updateLineNumbers();
+    updateWordCount();
+  });
+  el.addEventListener('scroll', () => {
+    lineNums.scrollTop = el.scrollTop;
+  });
+  el.addEventListener('keyup', updateCursor);
+  el.addEventListener('click', updateCursor);
+  el.addEventListener('keydown', handleTabKey);
+});
+
+function updateCursor() {
+  const el = editors[currentLang];
+  const val = el.value.substring(0, el.selectionStart);
+  const lines = val.split('\n');
+  curLine.textContent = lines.length;
+  curCol.textContent  = lines[lines.length - 1].length + 1;
+}
+
+function updateWordCount() {
+  const el = editors[currentLang];
+  const len = el.value.length;
+  wordCount.innerHTML = `<b>${len.toLocaleString()}</b> chars`;
+}
+
+function handleTabKey(e) {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const el = editors[currentLang];
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    el.value = el.value.substring(0, start) + '  ' + el.value.substring(end);
+    el.selectionStart = el.selectionEnd = start + 2;
+    updateLineNumbers();
+  }
+  // Ctrl+Enter = run
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    runPreview();
+  }
+}
+
+updateLineNumbers();
+updateCursor();
+updateWordCount();
+
+// ── RUN PREVIEW ──
+function runPreview() {
+  const html = editors.html.value;
+  const css  = editors.css.value;
+  const js   = editors.js.value;
+
+  // Inject CSS and JS into the HTML
+  let finalHtml = html;
+
+  // If there's a </head> tag, inject CSS before it
+  if (css.trim()) {
+    const styleTag = `<style>\n${css}\n</style>`;
+    if (finalHtml.includes('</head>')) {
+      finalHtml = finalHtml.replace('</head>', `${styleTag}\n</head>`);
+    } else {
+      finalHtml = styleTag + '\n' + finalHtml;
+    }
+  }
+
+  // If there's a </body> tag, inject JS before it
+  if (js.trim()) {
+    const scriptTag = `<script>\n${js}\n<\/script>`;
+    if (finalHtml.includes('</body>')) {
+      finalHtml = finalHtml.replace('</body>', `${scriptTag}\n</body>`);
+    } else {
+      finalHtml = finalHtml + '\n' + scriptTag;
+    }
+  }
+
+  previewEmpty.style.display = 'none';
+  previewFrame.style.display = 'block';
+  previewFrame.srcdoc = finalHtml;
+  previewed = true;
+
+  // Switch to split if in editor-only mode
+  if (layout === 'editor') {
+    setLayout('split');
+  }
+
+  showToast('Preview updated ✓');
+}
+
+document.getElementById('btn-run').addEventListener('click', runPreview);
+document.getElementById('btn-refresh').addEventListener('click', runPreview);
+
+// ── FONT SIZE ──
+document.getElementById('fs-plus').addEventListener('click', () => {
+  if (fontSize < 22) {
+    fontSize++;
+    applyFontSize();
+  }
+});
+document.getElementById('fs-minus').addEventListener('click', () => {
+  if (fontSize > 10) {
+    fontSize--;
+    applyFontSize();
+  }
+});
+function applyFontSize() {
+  Object.values(editors).forEach(e => e.style.fontSize = fontSize + 'px');
+  lineNums.style.fontSize = fontSize + 'px';
+  fsLabel.textContent = fontSize + 'px';
+  updateLineNumbers();
+}
+
+// ── CLEAR ──
+document.getElementById('btn-clear').addEventListener('click', () => {
+  if (confirm('Clear all code? This cannot be undone.')) {
+    editors.html.value = '';
+    editors.css.value  = '';
+    editors.js.value   = '';
+    previewFrame.srcdoc = '';
+    previewFrame.style.display = 'none';
+    previewEmpty.style.display = 'flex';
+    previewed = false;
+    updateLineNumbers();
+    updateWordCount();
+    showToast('Cleared all code');
+  }
+});
+
+// ── LAYOUT ──
+function setLayout(mode) {
+  layout = mode;
+  document.querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('layout-' + mode).classList.add('active');
+
+  if (mode === 'editor') {
+    editorPane.classList.remove('full', 'hidden');
+    editorPane.style.width = '100%';
+    previewPane.classList.add('hidden');
+    resizer.style.display = 'none';
+  } else if (mode === 'preview') {
+    editorPane.classList.add('hidden');
+    editorPane.style.width = '0';
+    previewPane.classList.remove('hidden');
+    resizer.style.display = 'none';
+    if (!previewed) runPreview();
+  } else {
+    // split
+    editorPane.classList.remove('hidden');
+    editorPane.style.width = '50%';
+    previewPane.classList.remove('hidden');
+    resizer.style.display = 'block';
+  }
+}
+
+document.getElementById('layout-editor').addEventListener('click', () => setLayout('editor'));
+document.getElementById('layout-split').addEventListener('click',  () => setLayout('split'));
+document.getElementById('layout-preview').addEventListener('click',() => setLayout('preview'));
+
+// ── RESIZER ──
+let isResizing = false;
+resizer.addEventListener('mousedown', e => {
+  isResizing = true;
+  resizer.classList.add('dragging');
+  document.body.style.userSelect = 'none';
+  document.body.style.cursor = 'col-resize';
+});
+document.addEventListener('mousemove', e => {
+  if (!isResizing) return;
+  const wsRect = workspace.getBoundingClientRect();
+  let pct = ((e.clientX - wsRect.left) / wsRect.width) * 100;
+  pct = Math.max(20, Math.min(80, pct));
+  editorPane.style.width = pct + '%';
+});
+document.addEventListener('mouseup', () => {
+  if (isResizing) {
+    isResizing = false;
+    resizer.classList.remove('dragging');
+    document.body.style.userSelect = '';
+    document.body.style.cursor = '';
+  }
+});
+
+// ── OPEN IN TAB ──
+document.getElementById('btn-fullscreen-preview').addEventListener('click', () => {
+  const html = editors.html.value;
+  const css  = editors.css.value;
+  const js   = editors.js.value;
+  let finalHtml = html;
+  if (css.trim()) {
+    const styleTag = `<style>\n${css}\n</style>`;
+    if (finalHtml.includes('</head>')) finalHtml = finalHtml.replace('</head>', styleTag + '\n</head>');
+    else finalHtml = styleTag + '\n' + finalHtml;
+  }
+  if (js.trim()) {
+    const scriptTag = `<script>\n${js}\n<\/script>`;
+    if (finalHtml.includes('</body>')) finalHtml = finalHtml.replace('</body>', scriptTag + '\n</body>');
+    else finalHtml = finalHtml + '\n' + scriptTag;
+  }
+  const blob = new Blob([finalHtml], {type: 'text/html'});
+  const url  = URL.createObjectURL(blob);
+  window.open(url, '_blank');
+});
+
+// ── COPY ALL ──
+document.getElementById('btn-copy-all').addEventListener('click', () => {
+  const all = `<!-- HTML -->\n${editors.html.value}\n\n<!-- CSS -->\n<style>\n${editors.css.value}\n</style>\n\n<!-- JS -->\n<script>\n${editors.js.value}\n<\/script>`;
+  navigator.clipboard.writeText(all).then(() => showToast('Copied to clipboard ✓'));
+});
+
+// ── DOWNLOAD MODAL ──
+document.getElementById('btn-download-modal').addEventListener('click', () => {
+  modalBg.classList.add('open');
+});
+document.getElementById('modal-close').addEventListener('click', () => {
+  modalBg.classList.remove('open');
+});
+modalBg.addEventListener('click', e => {
+  if (e.target === modalBg) modalBg.classList.remove('open');
+});
+
+function download(filename, content, type = 'text/plain') {
+  const blob = new Blob([content], {type});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  modalBg.classList.remove('open');
+  showToast(`Downloaded ${filename}`);
+}
+
+function buildCombined() {
+  const html = editors.html.value;
+  const css  = editors.css.value;
+  const js   = editors.js.value;
+  let finalHtml = html;
+  if (css.trim()) {
+    const styleTag = `<style>\n${css}\n</style>`;
+    if (finalHtml.includes('</head>')) finalHtml = finalHtml.replace('</head>', styleTag + '\n</head>');
+    else finalHtml = styleTag + '\n' + finalHtml;
+  }
+  if (js.trim()) {
+    const scriptTag = `<script>\n${js}\n<\/script>`;
+    if (finalHtml.includes('</body>')) finalHtml = finalHtml.replace('</body>', scriptTag + '\n</body>');
+    else finalHtml = finalHtml + '\n' + scriptTag;
+  }
+  return finalHtml;
+}
+
+document.getElementById('dl-combined').addEventListener('click', () => {
+  download('index.html', buildCombined(), 'text/html');
+});
+document.getElementById('dl-html').addEventListener('click', () => {
+  download('index.html', editors.html.value, 'text/html');
+});
+document.getElementById('dl-css').addEventListener('click', () => {
+  download('style.css', editors.css.value, 'text/css');
+});
+document.getElementById('dl-js').addEventListener('click', () => {
+  download('script.js', editors.js.value, 'text/javascript');
+});
+document.getElementById('dl-zip').addEventListener('click', () => {
+  download('index.html', editors.html.value, 'text/html');
+  setTimeout(() => download('style.css',  editors.css.value, 'text/css'), 300);
+  setTimeout(() => download('script.js',  editors.js.value, 'text/javascript'), 600);
+  modalBg.classList.remove('open');
+  showToast('Downloading 3 files...');
+});
+
+// ── TOAST ──
+let toastTimer;
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+// Initial run
+runPreview();
+</script>
+</body>
+</html>
